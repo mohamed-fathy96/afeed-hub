@@ -7,7 +7,7 @@ const routes = {
   },
 
   dashboard: {
-    statistics: "/dashboard",
+    statistics: "/",
     sliders: {
       index: "/sliders",
       create: "/slider/create",

@@ -21,12 +21,12 @@ import { IMenuItem } from "../admin";
 import { OrderStatusEnum } from "@app/lib/types/orders";
 
 export const adminMenuItems: IMenuItem[] = [
-  // {
-  //   key: "dashboard",
-  //   icon: airplayIcon,
-  //   label: "Dashboard",
-  //   url: routes.dashboard.statistics,
-  // },
+  {
+    key: "dashboard",
+    icon: airplayIcon,
+    label: "Dashboard",
+    url: routes.dashboard.statistics,
+  },
   // {
   //   key: "apps-sliders",
   //   icon: imageIcon,

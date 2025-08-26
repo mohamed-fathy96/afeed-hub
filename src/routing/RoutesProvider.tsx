@@ -7,14 +7,8 @@ import { routes } from "@app/lib/routes";
 
 const Router: React.FC = () => {
   const { pathname } = useLocation();
-  const navigate = useNavigate();
 
-  useEffect(() => {
-    if (pathname === "/" || pathname === "") {
-      navigate(routes.dashboard.orders.index);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pathname]);
+
 
   return (
     <Routes>
