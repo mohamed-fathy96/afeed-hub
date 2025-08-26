@@ -5,7 +5,6 @@ import translationFile from '@app/assets/locales/ar.json';
 
 const fallbackLng = ['en'];
 const availableLanguages = ['en', 'ar'];
-
 const resources = {
   en: {
     translation: translationFile,
