@@ -1,0 +1,15 @@
+export { GlobalService } from "./GlobalService";
+export { AuthService } from "./AuthService";
+export { CategoryService } from "./CategoryService";
+export { ProductService } from "./ProductService";
+export { SliderService } from "./SliderService";
+export { StoreService } from "./StoreService";
+export { UserService } from "./UserService";
+export { CouponService } from "./CouponService";
+export { InvnetoryService } from "./InvnetoryService";
+export { OffersService } from "./OffersService";
+export { OrderService } from "./OrderService";
+export { DashboardService } from "./DashboardService";
+export { MapMasterService } from "./MapMasterService";
+export { DropboxService } from "./DropboxService";
+export { BrandService } from "./BrandService";

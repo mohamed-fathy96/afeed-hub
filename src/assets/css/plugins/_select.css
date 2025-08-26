@@ -1,0 +1,83 @@
+/*Override Base style*/
+
+.react-select .react-select__input-container {
+    @apply cursor-pointer;
+}
+
+.react-select .react-select__single-value {
+    @apply text-inherit;
+}
+
+.react-select .react-select__multi-value {
+    @apply bg-base-200 text-inherit;
+}
+
+.react-select .react-select__multi-value .react-select__multi-value__label {
+    @apply text-inherit;
+}
+
+.react-select .react-select__control {
+    @apply border-base-content/20 bg-transparent;
+}
+
+.react-select .react-select__indicator-separator {
+    @apply bg-neutral-400;
+}
+
+.react-select .react-select__control--is-focused {
+    @apply shadow-none;
+}
+
+.react-select .react-select__menu {
+    @apply bg-base-100 px-1;
+}
+
+.react-select .react-select__option {
+    @apply cursor-pointer rounded bg-base-100 text-inherit transition-all hover:bg-base-200;
+    padding: 4px 8px;
+}
+
+.react-select .react-select__menu .react-select__menu-list {
+    @apply space-y-0.5;
+}
+
+.react-select .react-select__option--is-selected {
+    @apply bg-base-300;
+}
+
+.react-select__control {
+    @apply hover:!border-base-content/30;
+}
+
+/*Override for sm size*/
+.react-select.react-select__size-sm .react-select__control {
+    min-height: 2rem;
+    border-width: 1px;
+    padding: 0;
+}
+
+.react-select.react-select__size-sm .react-select__value-container {
+    font-size: 0.875rem;
+    padding: 0 8px;
+}
+
+.react-select.react-select__size-sm .react-select__menu-list {
+    font-size: 0.875rem;
+}
+
+.react-select.react-select__size-sm .react-select__input-container {
+    padding: 0px;
+}
+
+.react-select.react-select__size-sm .react-select__indicator {
+    padding: 5px 8px 6px 8px;
+}
+
+.react-select.react-select__size-sm .react-select__indicators {
+    height: 2rem;
+}
+
+/*Invalid input*/
+.react-select.invalid .react-select__control {
+    @apply border-error/60;
+}

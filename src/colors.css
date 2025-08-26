@@ -1,0 +1,11 @@
+:root {
+  --primary-color: #564dd5;
+  --rgb-primary-color: 29, 33, 44;
+  --secondary-color: #6c757d;
+  --success-color: #28a745;
+  --error-color: #dc3545;
+  --white-color: #fff;
+  --black-color: #000;
+  --text-color: rgb(112, 112, 112);
+  /* Add more color variables as needed */
+}

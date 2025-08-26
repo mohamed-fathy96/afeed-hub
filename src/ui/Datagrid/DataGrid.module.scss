@@ -1,0 +1,87 @@
+.dateGridHeaderWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 15px;
+  min-height: 49px;
+
+  .searchInputWrapper {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    font-weight: 900;
+  }
+}
+
+//material table styles
+.materialTableWrapper {
+  margin-top: 20px;
+
+  .MuiTableHead-root {
+    border: 1px solid #eff0f1;
+  }
+
+  .MuiTableCell-root {
+    padding: 10px;
+  }
+
+  .MuiTableRow-root:hover {
+    background-color: light-gray !important;
+  }
+
+  button:has(.excel-export-btn) {
+    position: absolute;
+    left: 0px;
+    cursor: pointer;
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  .MuiButtonBase-root {
+    outline: none;
+  }
+
+  .MuiTableCell-head {
+    text-align: center;
+  }
+
+  .MuiTableRow-root p {
+    margin: 0;
+  }
+
+  .MuiTableRow-root td {
+    text-align: center;
+  }
+
+  .MuiTableRow-root:nth-child(2n) {
+    background-color: light-gray2;
+  }
+}
+
+.MuiPopover-paper {
+  max-height: 40% !important;
+}
+
+.MuiCheckbox-root {
+  color: red !important
+}
+
+.paginationCustomStyle {
+  margin: 10px 0px;
+  display: flex;
+  justify-content: center;
+
+  .MuiButtonBase-root {
+    min-width: 32px !important;
+  }
+}
+
+[dir="rtl"] {
+  .paginationCustomStyle {
+    svg {
+      transform: scale(-1);
+    }
+  }
+}

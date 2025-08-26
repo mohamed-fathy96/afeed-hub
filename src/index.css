@@ -1,0 +1,43 @@
+@import "_root.css";
+
+/* Custom Styling */
+@import "./assets/css/custom/_animation.css";
+@import "./assets/css/custom/_components.css";
+@import "./assets/css/custom/_forms.css";
+@import "./assets/css/custom/_layout.css";
+
+/* Daisyui Overriding */
+@import "./assets/css/_override.css";
+
+/* Plugin Overriding */
+@import "./assets/css/plugins/_apexcharts.css";
+@import "./assets/css/plugins/_select.css";
+@import "./assets/css/plugins/_sooner.css";
+@import url("https://fonts.googleapis.com/icon?family=Material+Icons");
+
+/* .MuiTable-root td {
+    color: #545B61;
+} */
+
+/* .grouping-table {
+    background-color: red;
+} */
+
+/* .MuiTable-root th,
+.MuiTable-root td {
+    border-top: 1px solid #F3F3F3;
+    border-bottom: 1px solid #F3F3F3;
+} */
+
+/* .MuiTableCell-root {
+    background-color: #FCFCFC !important;
+    font-size: 14px !important;
+} */
+
+.material-icons {
+  font-family: "Material Icons" !important;
+}
+
+.MuiPaper-root {
+  box-shadow: none !important;
+}
