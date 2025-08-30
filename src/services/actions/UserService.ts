@@ -110,30 +110,4 @@ export class UserService {
       data,
     });
   }
-  // Get user addresses by user id
-  static getUserAddressesByUserId(params: any, ...extraParams: any[]) {
-    return apiGatewayService({
-      method: "GET",
-      url: setEndPoint(
-        endPoints.order.create.getUserAddressesByUserId,
-        ...extraParams
-      ),
-      params,
-    });
-  }
-  // Get all users for dropdown
-  static getAllUsersForDropdown(params: any, ...extraParams: any[]) {
-    return apiGatewayService({
-      method: "GET",
-      url: setEndPoint(endPoints.order.create.getAllUsers, ...extraParams),
-      params,
-    });
-  }
-  // Get all User addresses
-  static getAddressList(...extraParams: any[]) {
-    return apiGatewayService({
-      method: "GET",
-      url: setEndPoint(endPoints.order.create.getAddressList, ...extraParams),
-    });
-  }
 }

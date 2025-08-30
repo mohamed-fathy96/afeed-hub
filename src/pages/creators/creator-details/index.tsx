@@ -1,12 +1,10 @@
 import React, { useState } from "react";
-import { UserService } from "@app/services/actions";
+import { CreatorService, UserService } from "@app/services/actions";
 import { SectionLoader } from "@app/ui/SectionLoader";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useToast } from "@app/helpers/hooks/use-toast";
-import UserForm from "@app/components/form/user/UserForm";
 import { PageTitle } from "@app/ui/PageTitle";
-import RolesGrid from "@app/components/form/user/RolesGrid";
-import RestrictedWrapper from "@app/routing/routingComponents/RestrictedWrapper";
+import { CreatorDetails } from "@app/lib/types/creators";
 import {
   Avatar,
   Button,
@@ -23,10 +21,13 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { ModalHeader } from "@app/ui/Modal";
 import { ModalBody } from "@app/ui/Modal";
 import { routes } from "@app/lib/routes";
+import CreatorOverview from "../components/Details/CreatorOverview";
+import CreatorProduct from "../components/Details/CreatorProduct";
+import CreatorCustomers from "../components/Details/CreatorCustomers";
 
 interface PageProps {}
 
-const EditUserPage: React.FC<PageProps> = () => {
+const CreatorDetailsPage: React.FC<PageProps> = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [password, setPassword] = useState("");
   const params: { id?: string } = useParams();
@@ -43,39 +44,11 @@ const EditUserPage: React.FC<PageProps> = () => {
     data: userData,
     isLoading: isUserLoading,
     error: userError,
-  } = useQuery({
-    queryKey: ["user", params?.id],
+  } = useQuery<CreatorDetails>({
+    queryKey: ["creator", params?.id],
     queryFn: async () => {
-      const res = await UserService.getUserById(params?.id);
-      return res.data;
-    },
-    enabled: !!params?.id,
-  });
-
-  // Fetch user roles using react-query
-  const {
-    data: roles = [],
-    isLoading: isRolesLoading,
-    error: rolesError,
-  } = useQuery({
-    queryKey: ["userRoles", params?.id],
-    queryFn: async () => {
-      const res = await UserService.getUserRoles(params?.id);
-      return res.data;
-    },
-    enabled: !!params?.id,
-  });
-
-  // Fetch user balance using react-query
-  const {
-    data: userBalance,
-    isLoading: isBalanceLoading,
-    error: balanceError,
-  } = useQuery({
-    queryKey: ["userBalance", params?.id],
-    queryFn: async () => {
-      const res = await UserService.getUserBalance(params?.id);
-      return res.data;
+      const res = await CreatorService.getCreatorById(params?.id);
+      return res.data?.data;
     },
     enabled: !!params?.id,
   });
@@ -83,9 +56,9 @@ const EditUserPage: React.FC<PageProps> = () => {
   // Refresh data mutation
   const refreshDataMutation = useMutation({
     mutationFn: async () => {
-      // Invalidate and refetch all user-related queries
+      // Invalidate and refetch all creator-related queries
       await Promise.all([
-        queryClient.invalidateQueries({ queryKey: ["user", params?.id] }),
+        queryClient.invalidateQueries({ queryKey: ["creator", params?.id] }),
         queryClient.invalidateQueries({ queryKey: ["userRoles", params?.id] }),
         queryClient.invalidateQueries({
           queryKey: ["userBalance", params?.id],
@@ -110,24 +83,6 @@ const EditUserPage: React.FC<PageProps> = () => {
     }
   }, [userError, toast]);
 
-  React.useEffect(() => {
-    if (rolesError) {
-      toast.error(
-        (rolesError as any)?.response?.data?.message ??
-          "Failed to get user roles"
-      );
-    }
-  }, [rolesError, toast]);
-
-  React.useEffect(() => {
-    if (balanceError) {
-      toast.error(
-        (balanceError as any)?.response?.data?.message ??
-          "Failed to get user balance"
-      );
-    }
-  }, [balanceError, toast]);
-
   // Handle tab changes and update URL
   const handleTabChange = (tabName: string) => {
     navigate(`?tab=${tabName}`, { replace: true });
@@ -143,8 +98,8 @@ const EditUserPage: React.FC<PageProps> = () => {
   };
 
   const handleUserDataRefresh = () => {
-    // Specifically refresh user data when user is blocked/unblocked
-    queryClient.invalidateQueries({ queryKey: ["user", params?.id] });
+    // Specifically refresh creator data when user is blocked/unblocked
+    queryClient.invalidateQueries({ queryKey: ["creator", params?.id] });
   };
 
   const openModal = () => setModalOpen(true);
@@ -156,7 +111,7 @@ const EditUserPage: React.FC<PageProps> = () => {
   const resetPasswordMutation = useMutation({
     mutationFn: async (newPassword: string) => {
       const payload = { newPassword };
-      return await UserService.resetPassword(payload, userData?.id);
+      return await UserService.resetPassword(payload, userData?.profile?._id);
     },
     onSuccess: () => {
       toast.success("Password reset successfully");
@@ -172,7 +127,7 @@ const EditUserPage: React.FC<PageProps> = () => {
     e.preventDefault();
     resetPasswordMutation.mutate(password);
   };
-  const isLoading = isUserLoading || isRolesLoading || isBalanceLoading;
+  const isLoading = isUserLoading;
 
   return (
     <>
@@ -182,10 +137,16 @@ const EditUserPage: React.FC<PageProps> = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
           <div className="w-full mb-3 col-span-12">
             <PageTitle
-              title={`Edit ${userData?.name} Details` || "Edit User"}
+              title={
+                `Edit ${userData?.profile?.full_name} Details` || "Edit Creator"
+              }
               breadCrumbItems={[
-                { label: "Users", active: true, path: routes.dashboard.users.index },
-                { label: userData?.name || "", active: true },
+                {
+                  label: "Creators",
+                  active: true,
+                  path: routes.dashboard.users.index,
+                },
+                { label: userData?.profile?.full_name || "", active: true },
               ]}
             />
           </div>
@@ -195,45 +156,58 @@ const EditUserPage: React.FC<PageProps> = () => {
               <CardBody>
                 <div className="flex flex-col items-center justify-center mb-4">
                   <Avatar shape="circle" size="lg" className="mb-4">
-                    <Icon icon="lucide:user" className="w-16 h-16" />
+                    {userData?.profile?.profile_pic ? (
+                      <img
+                        src={userData.profile.profile_pic}
+                        alt={userData.profile.full_name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <Icon icon="lucide:user" className="w-16 h-16" />
+                    )}
                   </Avatar>
                   <h2 className="text-xl font-semibold text-center">
-                    {userData.name || "User"}
+                    {userData?.profile?.full_name || "Creator"}
                   </h2>
-                </div>
-
-                {/* Account Balance */}
+                  <span className="text-sm text-base-content/70 text-center">
+                    {userData?.profile?.service || "Creator"}
+                  </span>
+                </div>{" "}
+                {/* Creator Quick Stats */}
                 <div className="rounded-box bg-base-content/5 p-3 mb-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">Account Balance</span>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-medium">Pending Payout</span>
                     <div className="flex items-center gap-1">
-                      <span
-                        className={
-                          userBalance?.balance <= 0
-                            ? "text-error font-bold"
-                            : "text-success font-bold"
-                        }
-                      >
-                        {userBalance?.balance}
+                      <span className="text-primary font-bold">
+                        {userData?.metrics?.pendingPayoutAmount?.toLocaleString() ||
+                          0}
                       </span>
-                      QR
+                      <span className="text-xs">KD</span>
                     </div>
                   </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium">Total Customers</span>
+                    <span className="font-bold">
+                      {userData?.metrics?.totalCustomers?.toLocaleString() || 0}
+                    </span>
+                  </div>
                 </div>
-
                 <div className="space-y-3 mt-4">
                   <div className="flex items-center gap-2">
                     <Icon icon="lucide:mail" className="text-base-content/70" />
                     <span className="text-sm break-all flex-grow">
-                      {userData.email || "No email"}
+                      {userData?.profile?.email || "No email"}
                     </span>
-                    {userData.email && (
+                    {userData?.profile?.email && (
                       <Icon
                         icon="lucide:copy"
                         className="text-base-content/60 cursor-pointer hover:text-primary transition-colors"
                         fontSize={18}
                         onClick={() =>
-                          copyToClipboard(userData.email, "Email copied!")
+                          copyToClipboard(
+                            userData.profile.email,
+                            "Email copied!"
+                          )
                         }
                       />
                     )}
@@ -244,65 +218,83 @@ const EditUserPage: React.FC<PageProps> = () => {
                       className="text-base-content/70"
                     />
                     <span className="text-sm flex-grow">
-                      {userData.phoneNumber || "No phone"}
+                      {userData?.profile?.phone_number || "No phone"}
                     </span>
-                    {userData.phoneNumber && (
+                    {userData?.profile?.phone_number && (
                       <Icon
                         icon="lucide:copy"
                         className="text-base-content/60 cursor-pointer hover:text-primary transition-colors"
                         fontSize={18}
                         onClick={() =>
                           copyToClipboard(
-                            userData.phoneNumber,
+                            userData.profile.phone_number,
                             "Phone number copied!"
                           )
                         }
                       />
                     )}
                   </div>
+                  <div className="flex items-center gap-2">
+                    <Icon
+                      icon="lucide:map-pin"
+                      className="text-base-content/70"
+                    />
+                    <span className="text-sm flex-grow">
+                      {userData?.profile?.service || "No service"}
+                    </span>
+                  </div>
                 </div>
-
                 <Divider className="my-4" />
-
-                {/* System Information Section */}
-                {userData?.id && (
+                {/* Creator Information Section */}
+                {userData?.profile?._id && (
                   <>
                     <div className="rounded-box bg-base-content/5 p-3 mb-4">
                       <div className="flex items-center gap-2 mb-2">
-                        <Icon icon="lucide:calendar" className="text-primary" />
+                        <Icon icon="lucide:star" className="text-primary" />
                         <h3 className="text-sm font-medium">
-                          System Information
+                          Creator Information
                         </h3>
                       </div>
 
                       <div className="space-y-2">
-                        {userData?.lastSignInAt && (
-                          <div className="flex flex-col">
-                            <span className="text-xs text-base-content/70">
-                              Last Sign-In
-                            </span>
-                            <span className="text-sm">
-                              {formatToLocalTime(userData?.lastSignInAt)}
-                            </span>
-                          </div>
-                        )}
-
                         <div className="flex flex-col">
                           <span className="text-xs text-base-content/70">
-                            Account Created
+                            Plan Type
                           </span>
                           <span className="text-sm">
-                            {formatToLocalTime(userData?.createdAt)}
+                            {userData?.subscription?.planType || "N/A"}
                           </span>
                         </div>
 
-                        {userData?.smsCodeExpiresAt && (
+                        <div className="flex flex-col">
+                          <span className="text-xs text-base-content/70">
+                            Total Products
+                          </span>
+                          <span className="text-sm">
+                            {userData?.metrics?.totalProducts || 0}
+                          </span>
+                        </div>
+
+                        <div className="flex flex-col">
+                          <span className="text-xs text-base-content/70">
+                            30-Day Revenue
+                          </span>
+                          <span className="text-sm text-success font-medium">
+                            {userData?.metrics?.revenue30d?.toLocaleString() ||
+                              0}{" "}
+                            KD
+                          </span>
+                        </div>
+
+                        {userData?.metrics?.lastPayoutDate && (
                           <div className="flex flex-col">
                             <span className="text-xs text-base-content/70">
-                              OTP Code Expires
+                              Last Payout
                             </span>
                             <span className="text-sm">
-                              {formatToLocalTime(userData?.smsCodeExpiresAt)}
+                              {formatToLocalTime(
+                                userData.metrics.lastPayoutDate
+                              )}
                             </span>
                           </div>
                         )}
@@ -310,7 +302,6 @@ const EditUserPage: React.FC<PageProps> = () => {
                     </div>
                   </>
                 )}
-
                 <div className="flex flex-col gap-3">
                   <Button
                     color="primary"
@@ -322,10 +313,6 @@ const EditUserPage: React.FC<PageProps> = () => {
                   >
                     {"Refresh Data"}
                   </Button>
-                  {/* <RestrictedWrapper
-                    requiredPermissions="users"
-                    action="reset_password"
-                  > */}
                   <Button
                     color="secondary"
                     size="sm"
@@ -335,7 +322,6 @@ const EditUserPage: React.FC<PageProps> = () => {
                     <Icon icon="lucide:lock" />
                     Reset Password
                   </Button>
-                  {/* </RestrictedWrapper> */}
                 </div>
               </CardBody>
             </Card>
@@ -351,59 +337,33 @@ const EditUserPage: React.FC<PageProps> = () => {
                 onChange={() => handleTabChange("Details")}
               >
                 {currentTab === "Details" && (
-                  <UserForm
-                    data={userData}
-                    onDataRefresh={handleUserDataRefresh}
-                  />
+                  <CreatorOverview creator={userData} />
                 )}
               </RadioTab>
-              <RestrictedWrapper
-                action="edit_user_roles"
-                requiredPermissions="users"
+
+              <RadioTab
+                name="my_tabs_1"
+                label="Products"
+                contentClassName="pt-4"
+                checked={currentTab === "Products"}
+                onChange={() => handleTabChange("Products")}
               >
-                <RadioTab
-                  name="my_tabs_1"
-                  label="Roles"
-                  contentClassName="pt-4"
-                  checked={currentTab === "Roles"}
-                  onChange={() => handleTabChange("Roles")}
-                >
-                  {currentTab === "Roles" && (
-                    <>
-                      <RolesGrid
-                        roles={roles}
-                        userId={Number(params?.id)}
-                        fetchRoles={() => {
-                          queryClient.invalidateQueries({
-                            queryKey: ["userRoles", params?.id],
-                          });
-                        }}
-                      />
-                      {/* <CityGrid
-                      roles={roles}
-                      userId={Number(params?.id)}
-                      fetchRoles={fetchUserRoles}
-                    /> */}
-                    </>
-                  )}
-                </RadioTab>
-              </RestrictedWrapper>
-              <RestrictedWrapper
-                action="view_user_transactions"
-                requiredPermissions="users"
+                {currentTab === "Products" && userData?.profile?._id && (
+                  <CreatorProduct creatorId={userData.profile._id} />
+                )}
+              </RadioTab>
+
+              <RadioTab
+                name="my_tabs_1"
+                label="Customers"
+                contentClassName="pt-4"
+                checked={currentTab === "Customers"}
+                onChange={() => handleTabChange("Customers")}
               >
-                <RadioTab
-                  name="my_tabs_1"
-                  label="Transactions"
-                  contentClassName="pt-4"
-                  checked={currentTab === "Transactions"}
-                  onChange={() => handleTabChange("Transactions")}
-                >
-                  {currentTab === "Transactions" && (
-                    <></>
-                  )}
-                </RadioTab>
-              </RestrictedWrapper>
+                {currentTab === "Customers" && userData?.profile?._id && (
+                  <CreatorCustomers creatorId={userData.profile._id} />
+                )}
+              </RadioTab>
             </Tabs>
           </div>
         </div>
@@ -457,4 +417,4 @@ const EditUserPage: React.FC<PageProps> = () => {
   );
 };
 
-export default EditUserPage;
+export default CreatorDetailsPage;

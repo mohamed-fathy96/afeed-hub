@@ -75,7 +75,6 @@ const authSlice = createSlice({
           LocalStorageKeys.REFRESHTOKEN,
           action.payload.refreshToken
         );
-        window.location.href = routes.dashboard.orders.index;
         state.isLoading = false;
       })
       .addCase(setLoginUser.rejected, (state) => {

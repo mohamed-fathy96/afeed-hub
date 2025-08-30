@@ -23,8 +23,8 @@ export interface IDataGridHeaderProps {
 }
 export interface PaginationComponentProps {
   pageCount?: number;
-  pageNumber?: number;
-  pageSize?: number;
+  page?: number;
+  limit?: number;
   setParams?: (params: any) => void;
   params?: any;
 }
