@@ -78,8 +78,8 @@ const HubUsersPage: React.FC<OrdersPageProps> = () => {
 
   const [params, setParams] = useState<IParamsUrl>({
     searchKey: "",
-    pageNumber: 1,
-    pageSize: 10,
+    page: 1,
+    limit: 10,
     hubUsers: "true",
   });
 
@@ -117,7 +117,7 @@ const HubUsersPage: React.FC<OrdersPageProps> = () => {
     if ((search && search?.length > 2) || queryParams?.hubUsers === "true") {
       const updatedParams: IParamsUrl = {
         ...params,
-        pageNumber: Number(queryParams?.pageNumber) || 1,
+        page: Number(queryParams?.page) || 1,
         searchKey: queryParams?.searchKey || "",
         hubUsers: queryParams?.hubUsers || "true",
       };
@@ -167,14 +167,16 @@ const HubUsersPage: React.FC<OrdersPageProps> = () => {
           ) : (
             <>
               <DataGridTable
-                data={dataList?.data || []}
+                data={dataList?.items || []}
                 columns={columns}
                 options={{ actionsColumnIndex: -1 }}
               />
               <Pagination
-                pageCount={dataList?.totalPages || 1}
-                pageNumber={dataList?.pageNumber || 1}
-                pageSize={params.pageSize}
+                pageCount={Math.ceil(
+                  (dataList?.total || 0) / (params.limit || 1)
+                )}
+                page={dataList?.page || 1}
+                limit={params.limit}
                 setParams={setParams}
                 params={params}
               />

@@ -1,12 +1,11 @@
 import { IPrimaryColor, IThemeMode } from "./theme";
 
 export interface PaginationResponse<T> {
-  data: T[];
+  items: T[];
   pageIndex: number;
-  pageSize: number;
-  totalCount: number;
-  totalPages: number;
-  pageNumber: number;
+  limit: number;
+  total: number;
+  page: number;
 }
 export type IThemeState = {
   mode: IThemeMode;
@@ -17,8 +16,8 @@ export type IGlobalState = {
 };
 export type GlobalParamsUrl = {
   searchKey: string;
-  pageNumber: number;
-  pageSize?: number;
+  page: number;
+  limit?: number;
 };
 export type Images = {
   id: number;

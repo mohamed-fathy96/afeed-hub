@@ -8,44 +8,7 @@ const routes = {
 
   dashboard: {
     statistics: "/",
-    sliders: {
-      index: "/sliders",
-      create: "/slider/create",
-      show: (id: number | string) => `/sliders/${id}`,
-    },
-    stores: {
-      index: "/stores",
-      create: "/stores/create",
-      show: (id: number | string) => `/stores/${id}`,
-    },
-    categories: {
-      index: "/categories",
-      create: "/category/create",
-      show: (id: number | string) => `/category/${id}`,
-    },
-    categoriesNoraml: {
-      index: "/categories?type=0",
-      create: "/category/create",
-      show: (id: number | string) => `/category/${id}`,
-    },
-    categoryExplorer: {
-      index: "/category-explorer",
-    },
-    products: {
-      index: "/products",
-      create: "/products/create",
-      edit: (id: number | string) => `/products/${id}`,
-      bulkUpload: "/bulk/products",
-    },
-    brands: {
-      index: "/brands",
-      create: "/brands/create",
-      edit: (id: number | string) => `/brands/${id}`,
-      bulkUpload: "/bulk/brands",
-    },
-    suppliers: {
-      index: "/suppliers",
-    },
+
     customers: {
       index: "/customers",
       create: "/customers/create",
@@ -74,44 +37,11 @@ const routes = {
     hubUsers: {
       index: "/hub-users",
     },
-    coupons: {
-      index: "/coupons",
-      create: "/coupons/create",
-      edit: (id: number | string) => `/coupons/${id}`,
-    },
-    invnetory: {
-      index: "/inventory",
-      bulkCreate: "/bulk/inventory/create",
-      bulkInventory: "/bulk/inventory",
-    },
-    offers: {
-      index: "/bulk/offers",
-      create: "/bulk/offers/create",
-    },
-    orders: {
-      index: "/orders",
-      confirm: "/orders/unverify-order",
-      create: "/orders/create",
-      edit: (id: number | string) => `/orders/${id}`,
-    },
-    map: {
-      index: "/map-master",
-    },
-    dropbox: {
-      index: "/dropbox",
-      create: "/dropbox/create",
-    },
-    timeSlots: {
-      index: "/time-slots",
-      create: "/time-slots/create",
-      edit: (id: number | string) => `/time-slots/${id}`,
-    },
-  },
 
-  externalLinks: {
-    discord: "https://discord.com/invite/S6TZxycVHs",
-    purchase: "https://daisyui.com/store/",
-    daisyui: "https://daisyui.com",
+    creators: {
+      index: "/creators",
+      edit: (id: number | string) => `/creators/${id}`,
+    },
   },
 };
 

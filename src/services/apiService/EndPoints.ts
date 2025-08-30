@@ -24,79 +24,6 @@ export const endPoints = {
     verifyToken: `app/verify`,
     sendEmailToVerify: `app/send-verification-email`,
   },
-  //category
-  category: {
-    getAll: "catalog/api/hub/category",
-    create: "catalog/api/hub/category",
-    getByID: "catalog/api/hub/category/{0}",
-    deleteByID: "catalog/api/hub/category/{0}",
-    addImageByID: "catalog/api/hub/category/{0}/images",
-    deleteImageByID: "catalog/api/hub/category/{0}/images/{1}",
-    updateByID: "catalog/api/hub/category/{0}",
-    QuickupdateByID: "catalog/api/hub/category/{0}/quick-update",
-    getCategoryLightList: "catalog/api/hub/category/ddl",
-    reorderCategories: "catalog/api/hub/category/sort",
-    getLightList: "catalog/api/hub/category/all",
-    getChildrenCategories: "catalog/api/hub/category/children/{0}",
-  },
-  // Product
-  product: {
-    getAll: "catalog/api/hub/product",
-    create: "catalog/api/hub/product",
-    getByID: "catalog/api/hub/product/{0}",
-    deleteByID: "catalog/api/hub/product/{0}",
-    addImageByID: "catalog/api/hub/product/{0}/images",
-    deleteImageByID: "catalog/api/hub/product/{0}/images/{1}",
-    updateByID: "catalog/api/hub/product/{0}",
-    getAssignedCategoryByID: "catalog/api/hub/product/{0}/categories",
-    assignCategoryToProduct: "catalog/api/hub/product/{0}/categories/assign",
-    removeAssignedCategory: "catalog/api/hub/product/{0}/categories/{1}/remove",
-    getProductAvailability: "catalog/api/hub/product/{0}/availability",
-    updateSotreProduct: "catalog/api/hub/storeProduct/{0}",
-    getESupplierProduct: "catalog/api/hub/ProductDetails/{0}/e-products/list",
-    getSupplierProduct: "catalog/api/hub/ProductDetails/{0}/e-products",
-    assignSkuToProduct: "catalog/api/hub/ProductDetails/{0}/supplier-product",
-    deleteESupplierProduct: "catalog/api/hub/ProductDetails/e-products/{0}",
-    getAllBySKU: "catalog/api/hub/product/sku",
-    updateProductMediaSort: "catalog/api/hub/product/images/sort",
-    reorderSupplierProduct:
-      "catalog/api/hub/ProductDetails/{0}/e-products/sort-order",
-    toggleSupplierStatus:
-      "catalog/api/hub/ProductDetails/e-suppliers/{0}/toggle",
-    getProductBySearch: "catalog/api/hub/product/search",
-    syncProduct: "catalog/api/hub/ProductDetails/{0}/sync",
-    assignThumbnail: "catalog/api/hub/product/assign/thumbnail/{0}",
-  },
-  brands: {
-    getAll: "catalog/api/hub/brand",
-    create: "catalog/api/hub/brand",
-    getByID: "catalog/api/hub/brand/{0}",
-    deleteByID: "catalog/api/hub/brand/{0}",
-    updateByID: "catalog/api/hub/brand/{0}",
-    getBrandsLightList: "catalog/api/hub/brand/list",
-    addImageByID: "catalog/api/hub/brand/{0}/images",
-    deleteImageByID: "catalog/api/hub/brand/{0}/images/{1}",
-  },
-  // Sliders
-  slider: {
-    getAll: "catalog/api/hub/slider",
-    create: "catalog/api/hub/slider",
-    getByID: "catalog/api/hub/slider/{0}",
-    deleteByID: "catalog/api/hub/slider/{0}",
-    addImageByID: "catalog/api/hub/slider/{0}/images",
-    deleteImageByID: "catalog/api/hub/slider/{0}/images/{1}",
-    updateByID: "catalog/api/hub/slider/{0}",
-  },
-  // Store
-  store: {
-    getAll: "catalog/api/hub/store",
-    create: "catalog/api/hub/store",
-    getByID: "catalog/api/hub/store/{0}",
-    deleteByID: "catalog/api/hub/store/{0}",
-    addImageByID: "catalog/api/hub/store/{0}/images",
-    deleteImageByID: "catalog/api/hub/store/{0}/images/{1}",
-    updateByID: "catalog/api/hub/store/{0}",
-  },
   // Users
   user: {
     getAll: "api/hub/users",
@@ -125,89 +52,12 @@ export const endPoints = {
     assignActionsToGroup: `api/hub/Permissions/group/{0}/assign-permissions`,
     getCurrentUserPermissions: `api/hub/Account/current-permissions`,
   },
-  // Copuons
-  coupons: {
-    getAll: "ordering/api/hub/Coupons",
-    create: "ordering/api/hub/Coupons",
-    getByID: "ordering/api/hub/Coupons/{0}",
-    updateByID: "ordering/api/hub/Coupons/{0}",
-  },
-  // inventory
-  inventory: {
-    getAll: "catalog/api/hub/Inventory",
-    inventoryTransactions: "catalog/api/hub/Inventory/transactions",
-    exportInventory: "catalog/api/hub/Inventory/export",
-  },
-  // Bulk Upload
-  bulk: {
-    inventory: {
-      getAll: "catalog/api/hub/InventoryBulkUpdate",
-      create: "catalog/api/hub/InventoryBulkUpdate/upload",
-    },
-    product: {
-      create: "catalog/api/hub/product/bulk-upload",
-      assign: "catalog/api/hub/product/bulk-upload/assign-category",
-      sort: "catalog/api/hub/product/bulk-upload/sort",
-      status: "catalog/api/hub/product/bulk-upload/status",
-    },
-    offers: {
-      getAll: "catalog/api/hub/OfferRequest",
-      create: "catalog/api/hub/OfferRequest/upload",
-    },
-  },
-  // Orders
-  order: {
-    getAll: "ordering/api/hub/OrderListing",
-    statusBreakdown: "ordering/api/hub/OrderListing/status-breakdown",
-    getDistanceById: "ordering/api/hub/logistic/{0}/calculate-distance",
-    refund: "ordering/api/hub/order/details/{0}/refund",
-    reissue: "ordering/api/hub/order/details/{0}/reissue",
-    invoice: "ordering/Invoice/orders/invoice.pdf?guid={0}",
-    getNotConfirmed: "ordering/api/hub/OrderListing/admin/not-confirmed",
-    getProductByKeyword: "ordering/api/hub/product/search",
-    addAuthCode: "ordering/api/hub/orderActions/{0}/change-pos-auth-code",
-    selectPaymentMethod:
-      "ordering/api/hub/orderActions/{0}/change-payment-method",
-    updatePaymentMethod: "ordering/api/hub/order/details/{0}/payment-method",
-    getByID: `ordering/api/hub/order/details/{0}`,
-    getOrderItems: "ordering/api/hub/order/details/{0}/items",
-    updateOrderProduct: `ordering/api/hub/order/details/{0}/update/{1}`,
-    addProductToOrder: `ordering/api/hub/order/details/{0}/product/{1}/add`,
-    assignProvider: "ordering/api/hub/logistic/{0}/send-to-partner",
-    updateStatus: "ordering/api/hub/OrderActions/{0}/change-status",
-    trackOrder: "ordering/api/hub/order/tracking/{0}/status",
-    manualVerify: "ordering/api/hub/order/details/{0}/verify",
-    getOrderIpInfo: "ordering/api/hub/order/details/{0}/ipinfo",
-    orderTransactions: "ordering/api/hub/order/details/{0}/refund",
-    getPaymentLogs: "ordering/api/hub/order/details/{0}/payment-logs",
-    resend: "ordering/api/hub/order/details/{0}/resend",
-    generatePaymentLink: "ordering/api/Payment/generate/{0}",
-    applyCoupon: "ordering/api/hub/order/details/{0}/apply-coupon",
-    create: {
-      getUserAddressesByUserId: "api/hub/address/saved/{0}",
-      getAllUsers: "api/hub/users/all",
-      getAddressList: "ordering/api/hub/address/saved/{0}",
-      createOrder: "ordering/api/hub/order/details/create-manual-order",
-      getManualOrderTimeSlot: `ordering/api/timeslots/available`,
-      saveOrderAddress: "ordering/api/hub/address/order/address/create/{0}",
-    },
-  },
-  // map master
-  mapMaster: {
-    getStoresWithPolygon: `catalog/api/hub/Store/coverage-zones`,
-    updateStoresWithPolygon: `catalog/api/hub/Store/{0}/coverage-zones`,
-  },
-  // DropBox
-  dropbox: {
-    processFolder: "catalog/api/dropbox/process-folder",
-    getImages: "catalog/api/dropbox/get-image",
-    selectFiles: "catalog/api/dropbox/select-files",
-  },
-  timeSlot: {
-    getTimeSlotList: `ordering/api/hub/timeslots`,
-    createTimeSlot: `ordering/api/hub/timeslots`,
-    updateTimeSlot: `ordering/api/hub/timeslots/{0}`,
-    getTimeSlotDetails: `ordering/api/hub/timeslots/{0}`,
-    getAvaialbleSlotByDate: `ordering/api/hub/timeslots/available`,
+
+  // Creators
+  creators: {
+    getAll: "api/hub/creators/list",
+    getById: "api/hub/creators/{0}/overview",
+    getCreatorProduct: "api/hub/creators/{0}/products",
+    getCreatorCustomers: "api/hub/creators/{0}/customers",
   },
 };

@@ -8,8 +8,8 @@ import { convertObjectIntoQueryParams } from "@app/lib/helpers/constants/helpers
 const options = [10, 20, 50];
 const Pagination: React.FC<PaginationComponentProps> = ({
   pageCount = 1,
-  pageNumber = 1,
-  pageSize = 50,
+  page = 1,
+  limit = 50,
   setParams,
   params,
 }) => {
@@ -52,8 +52,8 @@ const Pagination: React.FC<PaginationComponentProps> = ({
               ? "bg-gray-800 text-white border-gray-700"
               : "bg-white text-black border-gray-300"
           }`}
-          value={pageSize}
-          onChange={(e) => handleSelect("pageSize", Number(e.target.value))}
+          value={limit}
+          onChange={(e) => handleSelect("limit", Number(e.target.value))}
         >
           {options.map((item, index) => (
             <option key={index} value={item}>
@@ -66,8 +66,8 @@ const Pagination: React.FC<PaginationComponentProps> = ({
           variant="outlined"
           shape="rounded"
           count={+pageCount}
-          page={+pageNumber}
-          onChange={(_event, value) => handleSelect("pageNumber", value)}
+          page={+page}
+          onChange={(_event, value) => handleSelect("page", value)}
         />
       </div>
     </ThemeProvider>
