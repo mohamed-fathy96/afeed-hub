@@ -3,10 +3,7 @@ import { UserService } from "@app/services/actions";
 import { SectionLoader } from "@app/ui/SectionLoader";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useToast } from "@app/helpers/hooks/use-toast";
-import UserForm from "@app/components/form/user/UserForm";
 import { PageTitle } from "@app/ui/PageTitle";
-import RolesGrid from "@app/components/form/user/RolesGrid";
-import RestrictedWrapper from "@app/routing/routingComponents/RestrictedWrapper";
 import {
   Avatar,
   Button,
@@ -18,16 +15,18 @@ import {
   ModalLegacy,
 } from "@app/ui";
 import { Icon } from "@app/ui/Icon";
-import { formatToLocalTime } from "@app/lib/utils/formatDate";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { ModalHeader } from "@app/ui/Modal";
 import { ModalBody } from "@app/ui/Modal";
 import { routes } from "@app/lib/routes";
+import UserPurchases from "../components/Details/UserPurchases";
+import { UserDetails } from "@app/lib/types/users";
 
 interface PageProps {}
 
 const EditUserPage: React.FC<PageProps> = () => {
   const [modalOpen, setModalOpen] = useState(false);
+  const [blockModalOpen, setBlockModalOpen] = useState(false);
   const [password, setPassword] = useState("");
   const params: { id?: string } = useParams();
   const navigate = useNavigate();
@@ -36,46 +35,18 @@ const EditUserPage: React.FC<PageProps> = () => {
   const [searchParams] = useSearchParams();
 
   // Determine the current tab from the URL or default to 'Details'
-  const currentTab = searchParams.get("tab") || "Details";
+  const currentTab = searchParams.get("tab") || "Purchases";
 
   // Fetch user by id using react-query
   const {
     data: userData,
     isLoading: isUserLoading,
     error: userError,
-  } = useQuery({
+  } = useQuery<UserDetails>({
     queryKey: ["user", params?.id],
     queryFn: async () => {
       const res = await UserService.getUserById(params?.id);
-      return res.data;
-    },
-    enabled: !!params?.id,
-  });
-
-  // Fetch user roles using react-query
-  const {
-    data: roles = [],
-    isLoading: isRolesLoading,
-    error: rolesError,
-  } = useQuery({
-    queryKey: ["userRoles", params?.id],
-    queryFn: async () => {
-      const res = await UserService.getUserRoles(params?.id);
-      return res.data;
-    },
-    enabled: !!params?.id,
-  });
-
-  // Fetch user balance using react-query
-  const {
-    data: userBalance,
-    isLoading: isBalanceLoading,
-    error: balanceError,
-  } = useQuery({
-    queryKey: ["userBalance", params?.id],
-    queryFn: async () => {
-      const res = await UserService.getUserBalance(params?.id);
-      return res.data;
+      return res.data?.data;
     },
     enabled: !!params?.id,
   });
@@ -86,10 +57,6 @@ const EditUserPage: React.FC<PageProps> = () => {
       // Invalidate and refetch all user-related queries
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ["user", params?.id] }),
-        queryClient.invalidateQueries({ queryKey: ["userRoles", params?.id] }),
-        queryClient.invalidateQueries({
-          queryKey: ["userBalance", params?.id],
-        }),
       ]);
     },
     onSuccess: () => {
@@ -99,34 +66,6 @@ const EditUserPage: React.FC<PageProps> = () => {
       toast.error(err?.response?.data?.message ?? "Failed to refresh data");
     },
   });
-
-  // Handle errors
-  React.useEffect(() => {
-    if (userError) {
-      toast.error(
-        (userError as any)?.response?.data?.message ??
-          "Failed to get user details"
-      );
-    }
-  }, [userError, toast]);
-
-  React.useEffect(() => {
-    if (rolesError) {
-      toast.error(
-        (rolesError as any)?.response?.data?.message ??
-          "Failed to get user roles"
-      );
-    }
-  }, [rolesError, toast]);
-
-  React.useEffect(() => {
-    if (balanceError) {
-      toast.error(
-        (balanceError as any)?.response?.data?.message ??
-          "Failed to get user balance"
-      );
-    }
-  }, [balanceError, toast]);
 
   // Handle tab changes and update URL
   const handleTabChange = (tabName: string) => {
@@ -142,11 +81,6 @@ const EditUserPage: React.FC<PageProps> = () => {
     refreshDataMutation.mutate();
   };
 
-  const handleUserDataRefresh = () => {
-    // Specifically refresh user data when user is blocked/unblocked
-    queryClient.invalidateQueries({ queryKey: ["user", params?.id] });
-  };
-
   const openModal = () => setModalOpen(true);
   const closeModal = () => {
     setModalOpen(false);
@@ -156,7 +90,7 @@ const EditUserPage: React.FC<PageProps> = () => {
   const resetPasswordMutation = useMutation({
     mutationFn: async (newPassword: string) => {
       const payload = { newPassword };
-      return await UserService.resetPassword(payload, userData?.id);
+      return await UserService.resetPassword(payload, userData?.profile?._id);
     },
     onSuccess: () => {
       toast.success("Password reset successfully");
@@ -168,11 +102,45 @@ const EditUserPage: React.FC<PageProps> = () => {
     },
   });
 
+  // Block/Unblock user mutation
+  const blockUserMutation = useMutation({
+    mutationFn: async (blocked: boolean) => {
+      return await UserService.blockUser(blocked, params?.id);
+    },
+    onSuccess: (_, blocked) => {
+      queryClient.invalidateQueries({ queryKey: ["user", params?.id] });
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+      toast.success(`User ${blocked ? "blocked" : "unblocked"} successfully`);
+      setBlockModalOpen(false);
+    },
+    onError: (error: any) => {
+      toast.error(
+        error?.response?.data?.message ||
+          `Failed to ${
+            userData?.profile?.status === "B" ? "unblock" : "block"
+          } user`
+      );
+    },
+  });
+
   const handleSubmitResetPassword = (e: React.FormEvent) => {
     e.preventDefault();
+    if (password.length < 6) {
+      toast.error("Password must be at least 6 characters long");
+      return;
+    }
     resetPasswordMutation.mutate(password);
   };
-  const isLoading = isUserLoading || isRolesLoading || isBalanceLoading;
+
+  const openBlockModal = () => setBlockModalOpen(true);
+  const closeBlockModal = () => setBlockModalOpen(false);
+
+  const handleBlockUser = () => {
+    const isCurrentlyBlocked = userData?.profile?.status === "B";
+    blockUserMutation.mutate(!isCurrentlyBlocked);
+  };
+
+  const isLoading = isUserLoading;
 
   return (
     <>
@@ -182,10 +150,17 @@ const EditUserPage: React.FC<PageProps> = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
           <div className="w-full mb-3 col-span-12">
             <PageTitle
-              title={`Edit ${userData?.name} Details` || "Edit User"}
+              title={
+                `Edit ${userData?.profile?.full_name || "User"} Details` ||
+                "Edit User"
+              }
               breadCrumbItems={[
-                { label: "Users", active: true, path: routes.dashboard.users.index },
-                { label: userData?.name || "", active: true },
+                {
+                  label: "Users",
+                  active: true,
+                  path: routes.dashboard.users.index,
+                },
+                { label: userData?.profile?.full_name || "", active: true },
               ]}
             />
           </div>
@@ -198,42 +173,57 @@ const EditUserPage: React.FC<PageProps> = () => {
                     <Icon icon="lucide:user" className="w-16 h-16" />
                   </Avatar>
                   <h2 className="text-xl font-semibold text-center">
-                    {userData.name || "User"}
+                    {userData.profile?.full_name || "User"}
                   </h2>
+
+                  {/* User Status Badge */}
+                  <div
+                    className={`badge gap-1 mt-2 ${
+                      userData.profile?.status === "B"
+                        ? "badge-error"
+                        : userData.profile?.status === "A"
+                        ? "badge-success"
+                        : "badge-warning"
+                    }`}
+                  >
+                    <Icon
+                      icon={
+                        userData.profile?.status === "B"
+                          ? "lucide:ban"
+                          : userData.profile?.status === "A"
+                          ? "lucide:check-circle"
+                          : "lucide:alert-circle"
+                      }
+                      className="w-3 h-3"
+                    />
+                    {userData.profile?.status === "B"
+                      ? "Blocked"
+                      : userData.profile?.status === "A"
+                      ? "Active"
+                      : userData.profile?.status === "I"
+                      ? "Inactive"
+                      : "Deleted"}
+                  </div>
                 </div>
 
                 {/* Account Balance */}
-                <div className="rounded-box bg-base-content/5 p-3 mb-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">Account Balance</span>
-                    <div className="flex items-center gap-1">
-                      <span
-                        className={
-                          userBalance?.balance <= 0
-                            ? "text-error font-bold"
-                            : "text-success font-bold"
-                        }
-                      >
-                        {userBalance?.balance}
-                      </span>
-                      QR
-                    </div>
-                  </div>
-                </div>
 
                 <div className="space-y-3 mt-4">
                   <div className="flex items-center gap-2">
                     <Icon icon="lucide:mail" className="text-base-content/70" />
                     <span className="text-sm break-all flex-grow">
-                      {userData.email || "No email"}
+                      {userData.profile?.email || "No email"}
                     </span>
-                    {userData.email && (
+                    {userData.profile?.email && (
                       <Icon
                         icon="lucide:copy"
                         className="text-base-content/60 cursor-pointer hover:text-primary transition-colors"
                         fontSize={18}
                         onClick={() =>
-                          copyToClipboard(userData.email, "Email copied!")
+                          copyToClipboard(
+                            userData.profile?.email,
+                            "Email copied!"
+                          )
                         }
                       />
                     )}
@@ -244,16 +234,16 @@ const EditUserPage: React.FC<PageProps> = () => {
                       className="text-base-content/70"
                     />
                     <span className="text-sm flex-grow">
-                      {userData.phoneNumber || "No phone"}
+                      {userData.profile?.phone_number || "No phone"}
                     </span>
-                    {userData.phoneNumber && (
+                    {userData.profile?.phone_number && (
                       <Icon
                         icon="lucide:copy"
                         className="text-base-content/60 cursor-pointer hover:text-primary transition-colors"
                         fontSize={18}
                         onClick={() =>
                           copyToClipboard(
-                            userData.phoneNumber,
+                            userData.profile?.phone_number,
                             "Phone number copied!"
                           )
                         }
@@ -262,10 +252,36 @@ const EditUserPage: React.FC<PageProps> = () => {
                   </div>
                 </div>
 
+                {/* User Statistics */}
+                <div className="rounded-box bg-base-content/5 p-3 mb-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Icon icon="lucide:trending-up" className="text-primary" />
+                    <h3 className="text-sm font-medium">Statistics</h3>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="text-center">
+                      <div className="text-lg font-semibold text-primary">
+                        {userData?.purchases?.total || 0}
+                      </div>
+                      <div className="text-xs text-base-content/70">
+                        Purchases
+                      </div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-lg font-semibold text-secondary">
+                        {userData?.purchases?.items?.length || 0}
+                      </div>
+                      <div className="text-xs text-base-content/70">
+                        Items Bought
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 <Divider className="my-4" />
 
                 {/* System Information Section */}
-                {userData?.id && (
+                {userData?.profile?._id && (
                   <>
                     <div className="rounded-box bg-base-content/5 p-3 mb-4">
                       <div className="flex items-center gap-2 mb-2">
@@ -276,36 +292,40 @@ const EditUserPage: React.FC<PageProps> = () => {
                       </div>
 
                       <div className="space-y-2">
-                        {userData?.lastSignInAt && (
-                          <div className="flex flex-col">
-                            <span className="text-xs text-base-content/70">
-                              Last Sign-In
-                            </span>
-                            <span className="text-sm">
-                              {formatToLocalTime(userData?.lastSignInAt)}
-                            </span>
-                          </div>
-                        )}
-
                         <div className="flex flex-col">
                           <span className="text-xs text-base-content/70">
-                            Account Created
+                            User ID
                           </span>
-                          <span className="text-sm">
-                            {formatToLocalTime(userData?.createdAt)}
+                          <span className="text-sm font-mono">
+                            {userData.profile._id}
                           </span>
                         </div>
 
-                        {userData?.smsCodeExpiresAt && (
-                          <div className="flex flex-col">
-                            <span className="text-xs text-base-content/70">
-                              OTP Code Expires
-                            </span>
-                            <span className="text-sm">
-                              {formatToLocalTime(userData?.smsCodeExpiresAt)}
-                            </span>
-                          </div>
-                        )}
+                        <div className="flex flex-col">
+                          <span className="text-xs text-base-content/70">
+                            Service
+                          </span>
+                          <span className="text-sm">
+                            {userData.profile.service || "N/A"}
+                          </span>
+                        </div>
+
+                        <div className="flex flex-col">
+                          <span className="text-xs text-base-content/70">
+                            Status
+                          </span>
+                          <span
+                            className={`text-sm font-medium ${
+                              userData.profile.status === "A"
+                                ? "text-success"
+                                : "text-error"
+                            }`}
+                          >
+                            {userData.profile.status === "A"
+                              ? "Active"
+                              : "Inactive"}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </>
@@ -336,6 +356,27 @@ const EditUserPage: React.FC<PageProps> = () => {
                     Reset Password
                   </Button>
                   {/* </RestrictedWrapper> */}
+                  <Button
+                    color={
+                      userData?.profile?.status === "B" ? "success" : "error"
+                    }
+                    size="sm"
+                    className="w-full flex items-center justify-center gap-1"
+                    onClick={openBlockModal}
+                    loading={blockUserMutation.isPending}
+                    disabled={blockUserMutation.isPending}
+                  >
+                    <Icon
+                      icon={
+                        userData?.profile?.status === "B"
+                          ? "lucide:unlock"
+                          : "lucide:ban"
+                      }
+                    />
+                    {userData?.profile?.status === "B"
+                      ? "Unblock User"
+                      : "Block User"}
+                  </Button>
                 </div>
               </CardBody>
             </Card>
@@ -345,65 +386,15 @@ const EditUserPage: React.FC<PageProps> = () => {
             <Tabs variant="bordered" className="px-4">
               <RadioTab
                 name="my_tabs_1"
-                label="Details"
+                label="Purchases"
                 contentClassName="pt-4"
-                checked={currentTab === "Details"}
-                onChange={() => handleTabChange("Details")}
+                checked={currentTab === "Purchases"}
+                onChange={() => handleTabChange("Purchases")}
               >
-                {currentTab === "Details" && (
-                  <UserForm
-                    data={userData}
-                    onDataRefresh={handleUserDataRefresh}
-                  />
+                {currentTab === "Purchases" && userData?.purchases && (
+                  <UserPurchases purchases={userData.purchases} />
                 )}
               </RadioTab>
-              <RestrictedWrapper
-                action="edit_user_roles"
-                requiredPermissions="users"
-              >
-                <RadioTab
-                  name="my_tabs_1"
-                  label="Roles"
-                  contentClassName="pt-4"
-                  checked={currentTab === "Roles"}
-                  onChange={() => handleTabChange("Roles")}
-                >
-                  {currentTab === "Roles" && (
-                    <>
-                      <RolesGrid
-                        roles={roles}
-                        userId={Number(params?.id)}
-                        fetchRoles={() => {
-                          queryClient.invalidateQueries({
-                            queryKey: ["userRoles", params?.id],
-                          });
-                        }}
-                      />
-                      {/* <CityGrid
-                      roles={roles}
-                      userId={Number(params?.id)}
-                      fetchRoles={fetchUserRoles}
-                    /> */}
-                    </>
-                  )}
-                </RadioTab>
-              </RestrictedWrapper>
-              <RestrictedWrapper
-                action="view_user_transactions"
-                requiredPermissions="users"
-              >
-                <RadioTab
-                  name="my_tabs_1"
-                  label="Transactions"
-                  contentClassName="pt-4"
-                  checked={currentTab === "Transactions"}
-                  onChange={() => handleTabChange("Transactions")}
-                >
-                  {currentTab === "Transactions" && (
-                    <></>
-                  )}
-                </RadioTab>
-              </RestrictedWrapper>
             </Tabs>
           </div>
         </div>
@@ -434,12 +425,24 @@ const EditUserPage: React.FC<PageProps> = () => {
                 <input
                   id="new-password"
                   type="password"
-                  className="input input-bordered"
+                  className={`input input-bordered ${
+                    password.length > 0 && password.length < 6
+                      ? "input-error"
+                      : ""
+                  }`}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter new password"
+                  placeholder="Enter new password (min 6 characters)"
                   required
+                  minLength={6}
                 />
+                {password.length > 0 && password.length < 6 && (
+                  <label className="label">
+                    <span className="label-text-alt text-error">
+                      Password must be at least 6 characters
+                    </span>
+                  </label>
+                )}
               </div>
             </div>
           </ModalBody>
@@ -447,11 +450,99 @@ const EditUserPage: React.FC<PageProps> = () => {
             <Button type="button" onClick={closeModal} variant="outline">
               Cancel
             </Button>
-            <Button type="submit" color="primary">
+            <Button
+              type="submit"
+              color="primary"
+              loading={resetPasswordMutation.isPending}
+              disabled={resetPasswordMutation.isPending || password.length < 6}
+            >
               Reset Password
             </Button>
           </div>
         </form>
+      </ModalLegacy>
+
+      {/* Block User Confirmation Modal */}
+      <ModalLegacy
+        open={blockModalOpen}
+        onClickBackdrop={closeBlockModal}
+        role="dialog"
+      >
+        <Button
+          size="sm"
+          shape="circle"
+          className="absolute right-2 top-2"
+          aria-label="Close modal"
+          onClick={closeBlockModal}
+        >
+          <Icon icon="lucide:x" />
+        </Button>
+        <ModalHeader>
+          <h3 className="text-lg font-bold">
+            {userData?.profile?.status === "B" ? "Unblock User" : "Block User"}
+          </h3>
+        </ModalHeader>
+        <ModalBody>
+          <div className="py-4">
+            <div className="flex items-center gap-3 mb-4">
+              <Icon
+                icon={
+                  userData?.profile?.status === "B"
+                    ? "lucide:unlock"
+                    : "lucide:ban"
+                }
+                className={`w-12 h-12 ${
+                  userData?.profile?.status === "B"
+                    ? "text-success"
+                    : "text-error"
+                }`}
+              />
+              <div>
+                <h4 className="text-lg font-semibold">
+                  {userData?.profile?.status === "B" ? "Unblock" : "Block"}{" "}
+                  {userData?.profile?.full_name}?
+                </h4>
+                <p className="text-base-content/70">
+                  {userData?.profile?.status === "B"
+                    ? "This user will be able to access their account again."
+                    : "This user will no longer be able to access their account."}
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-base-200 p-3 rounded-lg">
+              <p className="text-sm">
+                <strong>User:</strong> {userData?.profile?.full_name} (
+                {userData?.profile?.email})
+              </p>
+              <p className="text-sm">
+                <strong>Current Status:</strong>
+                <span
+                  className={`ml-1 font-medium ${
+                    userData?.profile?.status === "B"
+                      ? "text-error"
+                      : "text-success"
+                  }`}
+                >
+                  {userData?.profile?.status === "B" ? "Blocked" : "Active"}
+                </span>
+              </p>
+            </div>
+          </div>
+        </ModalBody>
+        <div className="p-4 flex justify-end gap-3 bg-base-200">
+          <Button type="button" onClick={closeBlockModal} variant="outline">
+            Cancel
+          </Button>
+          <Button
+            color={userData?.profile?.status === "B" ? "success" : "error"}
+            loading={blockUserMutation.isPending}
+            disabled={blockUserMutation.isPending}
+            onClick={handleBlockUser}
+          >
+            {userData?.profile?.status === "B" ? "Unblock User" : "Block User"}
+          </Button>
+        </div>
       </ModalLegacy>
     </>
   );

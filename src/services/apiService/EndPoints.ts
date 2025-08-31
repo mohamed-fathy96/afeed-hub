@@ -1,3 +1,4 @@
+
 //api end points
 export const endPoints = {
   global: {
@@ -26,7 +27,7 @@ export const endPoints = {
   },
   // Users
   user: {
-    getAll: "api/hub/users",
+    getAll: "api/hub/users/list",
     getByID: "api/hub/users/{0}",
     getAssignedRoleByID: "api/hub/Users/{0}/roles/store-level",
     assignGroupToStore: "api/hub/Users/roles/store-level/assign/{0}",
@@ -37,8 +38,8 @@ export const endPoints = {
     removeAssignedCity: "api/hub/Users/roles/city-level/assign/{0}",
     deductUserBalance: "api/hub/Wallet/{0}/deduct-balance",
     addUserBalance: "api/hub/Wallet/{0}/add-balance",
-    blockUser: "api/hub/Users/{0}/block",
-    resetPassword: "api/hub/Users/{0}/reset-password",
+    blockUser: "api/hub/users/{0}/block",
+    resetPassword: "api/hub/users/{0}/reset-password",
     changePassword: "api/account/change-password",
   },
   // Permissions
@@ -59,5 +60,10 @@ export const endPoints = {
     getById: "api/hub/creators/{0}/overview",
     getCreatorProduct: "api/hub/creators/{0}/products",
     getCreatorCustomers: "api/hub/creators/{0}/customers",
+  },
+  payments: {
+    getCreatorUserPayments: "api/hub/payments/user-creator",
+    getPendingPayments: "api/hub/payments/payouts/pending",
+    getSubscriptionBilling: "api/hub/payments/creator/subscriptions",
   },
 };
