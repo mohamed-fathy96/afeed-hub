@@ -170,8 +170,8 @@ const CreatorUserPayments: React.FC<CreatorUserPaymentsProps> = ({}) => {
 
   const columns = [
     {
-      header: "Transaction ID",
-      accessor: "transactionId",
+      title: "Transaction ID",
+      field: "transactionId",
       render: (payment: PaymentTransaction) => (
         <div className="font-mono text-xs">
           {payment.transactionId.substring(0, 16)}...
@@ -179,8 +179,8 @@ const CreatorUserPayments: React.FC<CreatorUserPaymentsProps> = ({}) => {
       ),
     },
     {
-      header: "Customer",
-      accessor: "user",
+      title: "Customer",
+      field: "user",
       render: (payment: PaymentTransaction) => (
         <div>
           <div className="font-medium text-sm">{payment.user.name}</div>
@@ -191,15 +191,15 @@ const CreatorUserPayments: React.FC<CreatorUserPaymentsProps> = ({}) => {
       ),
     },
     {
-      header: "Creator",
-      accessor: "creator",
+      title: "Creator",
+      field: "creator",
       render: (payment: PaymentTransaction) => (
         <div className="font-medium text-sm">{payment.creator.full_name}</div>
       ),
     },
     {
-      header: "Product",
-      accessor: "product",
+      title: "Product",
+      field: "product",
       render: (payment: PaymentTransaction) => (
         <div>
           <div className="font-medium text-sm">
@@ -212,22 +212,22 @@ const CreatorUserPayments: React.FC<CreatorUserPaymentsProps> = ({}) => {
       ),
     },
     {
-      header: "Amount",
-      accessor: "amount",
+      title: "Amount",
+      field: "amount",
       render: (payment: PaymentTransaction) => (
         <div className="font-bold text-sm">${payment.amount.toFixed(2)}</div>
       ),
     },
     {
-      header: "Payment Method",
-      accessor: "paymentMethod",
+      title: "Payment Method",
+      field: "paymentMethod",
       render: (payment: PaymentTransaction) => (
         <span className="badge badge-outline">{payment.paymentMethod}</span>
       ),
     },
     {
-      header: "Status",
-      accessor: "status",
+      title: "Status",
+      field: "status",
       render: (payment: PaymentTransaction) => (
         <Badge
           color={
@@ -245,8 +245,8 @@ const CreatorUserPayments: React.FC<CreatorUserPaymentsProps> = ({}) => {
       ),
     },
     {
-      header: "Date",
-      accessor: "date",
+      title: "Date",
+      field: "date",
       render: (payment: PaymentTransaction) => (
         <span className="text-sm">{formatToLocalTime(payment.date)}</span>
       ),

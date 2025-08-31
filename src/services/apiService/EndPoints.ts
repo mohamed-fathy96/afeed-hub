@@ -65,5 +65,7 @@ export const endPoints = {
     getCreatorUserPayments: "api/hub/payments/user-creator",
     getPendingPayments: "api/hub/payments/payouts/pending",
     getSubscriptionBilling: "api/hub/payments/creator/subscriptions",
+    settlementLog: "api/hub/payments/settlements",
+    updatePayouts: "api/hub/payments/creator/payout",
   },
 };

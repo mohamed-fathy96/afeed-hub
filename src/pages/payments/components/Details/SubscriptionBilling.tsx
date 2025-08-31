@@ -57,7 +57,7 @@ const SubscriptionBilling: React.FC<SubscriptionBillingProps> = ({}) => {
 
     if (hasUrlParams) {
       setParams({
-        tab: urlParams.get("tab") || "Pending_payments",
+        tab: urlParams.get("tab") || "creator_payouts",
         page: parseInt(urlParams.get("page") || "1"),
         limit: parseInt(urlParams.get("limit") || "20"),
         searchKey: urlParams.get("searchKey") || "",
@@ -159,8 +159,8 @@ const SubscriptionBilling: React.FC<SubscriptionBillingProps> = ({}) => {
 
   const columns = [
     {
-      header: "Payment Request ID",
-      accessor: "paymentRequestId",
+      title: "Payment Request ID",
+      field: "paymentRequestId",
       render: (subscription: SubscriptionBillingType) => (
         <div className="font-mono text-xs">
           {subscription.paymentRequestId.substring(0, 16)}...
@@ -168,8 +168,8 @@ const SubscriptionBilling: React.FC<SubscriptionBillingProps> = ({}) => {
       ),
     },
     {
-      header: "Creator",
-      accessor: "creatorName",
+      title: "Creator",
+      field: "creatorName",
       render: (subscription: SubscriptionBillingType) => (
         <div>
           <div className="font-medium text-sm">{subscription.creatorName}</div>
@@ -180,8 +180,8 @@ const SubscriptionBilling: React.FC<SubscriptionBillingProps> = ({}) => {
       ),
     },
     {
-      header: "Plan",
-      accessor: "planType",
+      title: "Plan",
+      field: "planType",
       render: (subscription: SubscriptionBillingType) => (
         <div>
           <div className="font-medium text-sm">{subscription.planType}</div>
@@ -192,22 +192,22 @@ const SubscriptionBilling: React.FC<SubscriptionBillingProps> = ({}) => {
       ),
     },
     {
-      header: "Amount",
-      accessor: "amount",
+      title: "Amount",
+      field: "amount",
       render: (subscription: SubscriptionBillingType) => (
         <div className="font-bold text-sm">${subscription.amount.toFixed(2)}</div>
       ),
     },
     {
-      header: "Payment Method",
-      accessor: "paymentMethod",
+      title: "Payment Method",
+      field: "paymentMethod",
       render: (subscription: SubscriptionBillingType) => (
         <span className="badge badge-outline">{subscription.paymentMethod}</span>
       ),
     },
     {
-      header: "Status",
-      accessor: "status",
+      title: "Status",
+      field: "status",
       render: (subscription: SubscriptionBillingType) => (
         <Badge
           color={
@@ -227,15 +227,15 @@ const SubscriptionBilling: React.FC<SubscriptionBillingProps> = ({}) => {
       ),
     },
     {
-      header: "Last Payment",
-      accessor: "lastPaymentDate",
+      title: "Last Payment",
+      field: "lastPaymentDate",
       render: (subscription: SubscriptionBillingType) => (
         <span className="text-sm">{formatToLocalTime(subscription.lastPaymentDate)}</span>
       ),
     },
     {
-      header: "Next Billing",
-      accessor: "nextBillingDate",
+      title: "Next Billing",
+      field: "nextBillingDate",
       render: (subscription: SubscriptionBillingType) => (
         <span className="text-sm">{formatToLocalTime(subscription.nextBillingDate)}</span>
       ),

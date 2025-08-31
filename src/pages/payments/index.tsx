@@ -1,13 +1,12 @@
-import React, { useState } from "react";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { useToast } from "@app/helpers/hooks/use-toast";
+import React from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { PageTitle } from "@app/ui/PageTitle";
 import { RadioTab, Tabs } from "@app/ui";
-import { useQueryClient } from "@tanstack/react-query";
 
 import CreatorUserPayments from "./components/Details/CreatorUserPayments";
-import UserPendingPatments from "./components/Details/UserPendingPatments";
 import SubscriptionBilling from "./components/Details/SubscriptionBilling";
+import CreatorPayouts from "./components/Details/CreatorPayouts";
+import SettlementLog from "./components/Details/SettlementLog";
 
 interface PageProps {}
 
@@ -56,12 +55,19 @@ const PaymentsConsole: React.FC<PageProps> = () => {
             <RadioTab
               key="pending-tab"
               name="payment_tabs"
-              label="Pending Payments"
+              label="Creator Payouts"
               className="flex text-nowrap"
-              checked={currentTab === "Pending_payments"}
-              onChange={() => handleTabChange("Pending_payments")}
+              checked={currentTab === "creator_payouts"}
+              onChange={() => handleTabChange("creator_payouts")}
             />
-
+            <RadioTab
+              key="settlement-log-tab"
+              name="payment_tabs"
+              label="Settlement Log"
+              className="flex text-nowrap"
+              checked={currentTab === "settlement_log"}
+              onChange={() => handleTabChange("settlement_log")}
+            />
             <RadioTab
               key="subscription-tab"
               name="payment_tabs"
@@ -73,7 +79,8 @@ const PaymentsConsole: React.FC<PageProps> = () => {
           </Tabs>
           {currentTab === "Creator_user_payments" && <CreatorUserPayments />}
           {currentTab === "Subscription_billing" && <SubscriptionBilling />}
-          {currentTab === "Pending_payments" && <UserPendingPatments />}
+          {currentTab === "creator_payouts" && <CreatorPayouts />}
+          {currentTab === "settlement_log" && <SettlementLog />}
         </div>
       </div>
     </>

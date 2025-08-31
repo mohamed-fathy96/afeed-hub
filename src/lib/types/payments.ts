@@ -79,3 +79,25 @@ export interface SubscriptionBillingResponse {
   limit: number;
   panels: SubscriptionPanels;
 }
+
+export interface SettlementLogItem {
+  creatorId: string;
+  creatorName: string;
+  payoutAmount: number;
+  payoutAt: string;
+  payoutMethod: string;
+  triggeredBy: {
+    _id: string;
+    name: string;
+  };
+  tableData: {
+    id: number;
+  };
+}
+
+export interface SettlementLogResponse {
+  items: SettlementLogItem[];
+  total: number;
+  page: number;
+  limit: number;
+}

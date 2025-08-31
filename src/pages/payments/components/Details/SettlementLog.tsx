@@ -10,25 +10,18 @@ import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
 import { formatToLocalTime } from "@app/lib/utils/formatDate";
 import {
-  PendingPayment,
-  PendingPaymentsResponse,
+  SettlementLogItem,
+  SettlementLogResponse,
 } from "@app/lib/types/payments";
 
-// Helper function to format date for API
-const formatDateForAPI = (dateString: string): string => {
-  if (!dateString) return "";
-  const date = new Date(dateString);
-  return date.toISOString();
-};
+interface SettlementLogProps {}
 
-interface UserPendingPaymentsProps {}
-
-const UserPendingPatments: React.FC<UserPendingPaymentsProps> = ({}) => {
+const SettlementLog: React.FC<SettlementLogProps> = ({}) => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   // Initialize params from URL or defaults
   const [params, setParams] = useState({
-    tab: searchParams.get("tab") || "Pending_payments",
+    tab: searchParams.get("tab") || "settlement_log",
     page: parseInt(searchParams.get("page") || "1"),
     limit: parseInt(searchParams.get("limit") || "20"),
     searchKey: searchParams.get("searchKey") || "",
@@ -56,7 +49,7 @@ const UserPendingPatments: React.FC<UserPendingPaymentsProps> = ({}) => {
 
     if (hasUrlParams) {
       setParams({
-        tab: urlParams.get("tab") || "Pending_payments",
+        tab: urlParams.get("tab") || "creator_payouts",
         page: parseInt(urlParams.get("page") || "1"),
         limit: parseInt(urlParams.get("limit") || "20"),
         searchKey: urlParams.get("searchKey") || "",
@@ -64,15 +57,13 @@ const UserPendingPatments: React.FC<UserPendingPaymentsProps> = ({}) => {
     }
   }, []); // Only run on mount
 
-  // Fetch payment transactions using React Query
+  // Fetch settlement log using React Query
   const {
     data: payments,
     isLoading,
-    isFetching,
     error,
-    refetch,
-  } = useQuery<PendingPaymentsResponse>({
-    queryKey: ["pendingPayments", params],
+  } = useQuery<SettlementLogResponse>({
+    queryKey: ["SettlementLog", params],
     queryFn: async () => {
       const cleanParams = Object.fromEntries(
         Object.entries(params).filter(([_, value]) => value !== "")
@@ -80,12 +71,12 @@ const UserPendingPatments: React.FC<UserPendingPaymentsProps> = ({}) => {
 
       // Debug logging in development
       if (process.env.NODE_ENV === "development") {
-        console.log("Pending Payments API Call:", {
+        console.log("Settlement Log API Call:", {
           params: cleanParams,
         });
       }
 
-      const response = await PaymentService.getPendingPayments(cleanParams);
+      const response = await PaymentService.getSettlementLog(cleanParams);
       console.log(response);
 
       return response.data?.data;
@@ -100,7 +91,7 @@ const UserPendingPatments: React.FC<UserPendingPaymentsProps> = ({}) => {
     if (error) {
       toast.error(
         (error as any)?.response?.data?.message ||
-          "Failed to fetch pending payments"
+          "Failed to fetch settlement log"
       );
     }
   }, [error, toast]);
@@ -119,83 +110,51 @@ const UserPendingPatments: React.FC<UserPendingPaymentsProps> = ({}) => {
     }
   };
 
-  const handleStatusFilter = (status: string) => {
-    setParams((prev) => ({
-      ...prev,
-      status: status,
-      page: 1,
-    }));
-  };
-
-  const handleClearFilters = () => {
-    setParams((prev) => ({
-      ...prev,
-      searchKey: "",
-      page: 1,
-      limit: 20,
-    }));
-  };
-
-  const handleApplyFilters = () => {
-    setParams((prev) => ({
-      ...prev,
-      searchKey: params.searchKey.trim(),
-      page: 1,
-    }));
-  };
-
-  const handleShareFilters = () => {
-    const currentUrl = window.location.href;
-    navigator.clipboard
-      .writeText(currentUrl)
-      .then(() => {
-        toast.success("Filter URL copied to clipboard!");
-      })
-      .catch(() => {
-        toast.error("Failed to copy URL to clipboard");
-      });
-  };
-
   const columns = [
     {
-      header: "Creator ID",
-      accessor: "creatorId",
-      render: (payment: PendingPayment) => (
-        <div className="font-mono text-xs">{payment.creatorId}</div>
+      title: "Creator ID",
+      field: "creatorId",
+      render: (settlement: SettlementLogItem) => (
+        <div className="font-mono text-xs">{settlement.creatorId}</div>
       ),
     },
     {
-      header: "Creator Name",
-      accessor: "creatorName",
-      render: (payment: PendingPayment) => (
-        <div className="font-medium text-sm">{payment.creatorName}</div>
+      title: "Creator Name",
+      field: "creatorName",
+      render: (settlement: SettlementLogItem) => (
+        <div className="font-medium text-sm">{settlement.creatorName}</div>
       ),
     },
     {
-      header: "Total Owed",
-      accessor: "totalOwed",
-      render: (payment: PendingPayment) => (
-        <div className="font-bold text-sm">${payment.totalOwed.toFixed(2)}</div>
+      title: "Payout Amount",
+      field: "payoutAmount",
+      render: (settlement: SettlementLogItem) => (
+        <div className="font-bold text-sm">
+          KD {settlement.payoutAmount.toFixed(2)}
+        </div>
       ),
     },
     {
-      header: "Bank/Wallet Info",
-      accessor: "bankWalletInfo",
-      render: (payment: PendingPayment) => (
+      title: "Payout Method",
+      field: "payoutMethod",
+      render: (settlement: SettlementLogItem) => (
+        <span className="text-sm">{settlement.payoutMethod}</span>
+      ),
+    },
+    {
+      title: "Payout Date",
+      field: "payoutAt",
+      render: (settlement: SettlementLogItem) => (
         <span className="text-sm">
-          {payment.bankWalletInfo || "Not provided"}
+          {formatToLocalTime(settlement.payoutAt)}
         </span>
       ),
     },
     {
-      header: "Last Payout Date",
-      accessor: "lastPayoutDate",
-      render: (payment: PendingPayment) => (
-        <span className="text-sm">
-          {payment.lastPayoutDate
-            ? formatToLocalTime(payment.lastPayoutDate)
-            : "Never"}
-        </span>
+      title: "Triggered By",
+      field: "triggeredBy",
+      render: (settlement: SettlementLogItem) => (
+        <span className="text-sm">{settlement.triggeredBy.name}</span>
       ),
     },
   ];
@@ -314,12 +273,14 @@ const UserPendingPatments: React.FC<UserPendingPaymentsProps> = ({}) => {
                     KD
                     {(
                       payments.items?.reduce(
-                        (sum, p) => sum + p.totalOwed,
+                        (sum, p) => sum + p.payoutAmount,
                         0
                       ) || 0
                     ).toFixed(2)}
                   </div>
-                  <div className="text-sm text-base-content/70">Total Owed</div>
+                  <div className="text-sm text-base-content/70">
+                    Total Payouts
+                  </div>
                 </div>
               </div>
             </CardBody>
@@ -328,34 +289,35 @@ const UserPendingPatments: React.FC<UserPendingPaymentsProps> = ({}) => {
           <Card className="bg-gradient-to-r from-warning/10 to-warning/5">
             <CardBody className="p-4">
               <div className="flex items-center gap-3">
-                <Icon icon="lucide:wallet" className="w-8 h-8 text-warning" />
+                <Icon
+                  icon="lucide:credit-card"
+                  className="w-8 h-8 text-warning"
+                />
                 <div>
                   <div className="text-2xl font-bold text-warning">
-                    {payments.items?.filter((p) => p.bankWalletInfo).length ||
-                      0}
+                    {payments.items?.filter(
+                      (p) => p.payoutMethod === "Bank Transfer"
+                    ).length || 0}
                   </div>
                   <div className="text-sm text-base-content/70">
-                    With Bank Info
+                    Bank Transfers
                   </div>
                 </div>
               </div>
             </CardBody>
           </Card>
 
-          <Card className="bg-gradient-to-r from-error/10 to-error/5">
+          <Card className="bg-gradient-to-r from-info/10 to-info/5">
             <CardBody className="p-4">
               <div className="flex items-center gap-3">
-                <Icon
-                  icon="lucide:alert-circle"
-                  className="w-8 h-8 text-error"
-                />
+                <Icon icon="lucide:user-check" className="w-8 h-8 text-info" />
                 <div>
-                  <div className="text-2xl font-bold text-error">
-                    {payments.items?.filter((p) => !p.bankWalletInfo).length ||
-                      0}
+                  <div className="text-2xl font-bold text-info">
+                    {new Set(payments.items?.map((p) => p.triggeredBy._id))
+                      .size || 0}
                   </div>
                   <div className="text-sm text-base-content/70">
-                    Missing Bank Info
+                    Unique Approvers
                   </div>
                 </div>
               </div>
@@ -385,4 +347,4 @@ const UserPendingPatments: React.FC<UserPendingPaymentsProps> = ({}) => {
   );
 };
 
-export default UserPendingPatments;
+export default SettlementLog;
