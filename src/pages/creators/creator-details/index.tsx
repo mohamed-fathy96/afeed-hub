@@ -59,10 +59,6 @@ const CreatorDetailsPage: React.FC<PageProps> = () => {
       // Invalidate and refetch all creator-related queries
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ["creator", params?.id] }),
-        queryClient.invalidateQueries({ queryKey: ["userRoles", params?.id] }),
-        queryClient.invalidateQueries({
-          queryKey: ["userBalance", params?.id],
-        }),
       ]);
     },
     onSuccess: () => {
@@ -70,6 +66,28 @@ const CreatorDetailsPage: React.FC<PageProps> = () => {
     },
     onError: (err: any) => {
       toast.error(err?.response?.data?.message ?? "Failed to refresh data");
+    },
+  });
+  const impersonateCreator = useMutation({
+    mutationFn: async () => {
+      const response = await CreatorService.impersonateCreator(
+        userData?.profile?._id
+      );
+      return response;
+    },
+    onSuccess: (response: any) => {
+      console.log(response);
+
+      toast.success("Impersonated user successfully");
+      window.open(
+        `http://localhost:3102/en/cc/auth/login?token=${response?.data?.data?.token}`,
+        "_blank"
+      );
+    },
+    onError: (error: any) => {
+      toast.error(
+        error?.response?.data?.message || "Failed to impersonate user"
+      );
     },
   });
 
@@ -97,11 +115,6 @@ const CreatorDetailsPage: React.FC<PageProps> = () => {
     refreshDataMutation.mutate();
   };
 
-  const handleUserDataRefresh = () => {
-    // Specifically refresh creator data when user is blocked/unblocked
-    queryClient.invalidateQueries({ queryKey: ["creator", params?.id] });
-  };
-
   const openModal = () => setModalOpen(true);
   const closeModal = () => {
     setModalOpen(false);
@@ -127,6 +140,7 @@ const CreatorDetailsPage: React.FC<PageProps> = () => {
     e.preventDefault();
     resetPasswordMutation.mutate(password);
   };
+
   const isLoading = isUserLoading;
 
   return (
@@ -322,49 +336,50 @@ const CreatorDetailsPage: React.FC<PageProps> = () => {
                     <Icon icon="lucide:lock" />
                     Reset Password
                   </Button>
+                  <Button
+                    color="success"
+                    size="sm"
+                    className="w-full flex items-center justify-center gap-1"
+                    onClick={() => impersonateCreator.mutate()}
+                  >
+                    <Icon icon="lucide:eye" />
+                    Impersonate
+                  </Button>
                 </div>
               </CardBody>
             </Card>
           </div>
 
           <div className="lg:col-span-9">
-            <Tabs variant="bordered" className="px-4">
+            <Tabs variant="tabs-box" className="px-4">
               <RadioTab
                 name="my_tabs_1"
                 label="Details"
-                contentClassName="pt-4"
                 checked={currentTab === "Details"}
                 onChange={() => handleTabChange("Details")}
-              >
-                {currentTab === "Details" && (
-                  <CreatorOverview creator={userData} />
-                )}
-              </RadioTab>
+              ></RadioTab>
 
               <RadioTab
                 name="my_tabs_1"
                 label="Products"
-                contentClassName="pt-4"
                 checked={currentTab === "Products"}
                 onChange={() => handleTabChange("Products")}
-              >
-                {currentTab === "Products" && userData?.profile?._id && (
-                  <CreatorProduct creatorId={userData.profile._id} />
-                )}
-              </RadioTab>
+              ></RadioTab>
 
               <RadioTab
                 name="my_tabs_1"
                 label="Customers"
-                contentClassName="pt-4"
                 checked={currentTab === "Customers"}
                 onChange={() => handleTabChange("Customers")}
-              >
-                {currentTab === "Customers" && userData?.profile?._id && (
-                  <CreatorCustomers creatorId={userData.profile._id} />
-                )}
-              </RadioTab>
+              ></RadioTab>
             </Tabs>
+            {currentTab === "Details" && <CreatorOverview creator={userData} />}
+            {currentTab === "Products" && userData?.profile?._id && (
+              <CreatorProduct creatorId={userData.profile._id} />
+            )}
+            {currentTab === "Customers" && userData?.profile?._id && (
+              <CreatorCustomers creatorId={userData.profile._id} />
+            )}
           </div>
         </div>
       )}

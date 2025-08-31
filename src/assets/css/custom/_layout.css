@@ -54,3 +54,16 @@
 .pro-badge {
     @apply ms-0 rounded bg-base-content/10 px-1.5 py-[3px] text-[12px]/none opacity-70;
 }
+
+.tabs-box {
+    @apply bg-base-content/5 p-0.5 rounded-xl shadow-sm items-center flex justify-center mb-4;
+
+}
+
+.tabs-box>input {
+    @apply flex-1 text-center cursor-pointer !rounded-xl;
+}
+
+.tabs-box>input:checked {
+    @apply bg-base-100 text-inherit !rounded-xl;
+}

@@ -16,7 +16,8 @@ const PaymentsConsole: React.FC<PageProps> = () => {
   const [searchParams] = useSearchParams();
 
   // Determine the current tab from the URL or default to 'Customers'
-  const currentTab = searchParams.get("tab") || "Customers";
+  const currentTab = searchParams.get("tab") || "Creator_user_payments";
+  console.log(currentTab);
 
   // Handle tab changes and update URL
   const handleTabChange = (tabName: string) => {
@@ -43,42 +44,36 @@ const PaymentsConsole: React.FC<PageProps> = () => {
         {/* User Quick Info Card */}
 
         <div className="lg:col-span-12">
-          <Tabs variant="bordered" className="px-4">
+          <Tabs variant="tabs-box" className="px-4">
             <RadioTab
               key="customers-tab"
               className="flex text-nowrap"
               name="payment_tabs"
               label="User -> Creator Payments"
-              contentClassName="pt-4"
-              checked={currentTab === "Customers"}
-              onChange={() => handleTabChange("Customers")}
-            >
-              {currentTab === "Customers" && <CreatorUserPayments />}
-            </RadioTab>
+              checked={currentTab === "Creator_user_payments"}
+              onChange={() => handleTabChange("Creator_user_payments")}
+            />
             <RadioTab
               key="pending-tab"
               name="payment_tabs"
               label="Pending Payments"
               className="flex text-nowrap"
-              contentClassName="pt-4"
               checked={currentTab === "Pending_payments"}
               onChange={() => handleTabChange("Pending_payments")}
-            >
-              {currentTab === "Pending_payments" && <UserPendingPatments />}
-            </RadioTab>
+            />
 
             <RadioTab
               key="subscription-tab"
               name="payment_tabs"
               label="Subscriptions Billing"
               className="flex text-nowrap"
-              contentClassName="pt-4"
               checked={currentTab === "Subscription_billing"}
               onChange={() => handleTabChange("Subscription_billing")}
-            >
-              {currentTab === "Subscription_billing" && <SubscriptionBilling />}
-            </RadioTab>
+            />
           </Tabs>
+          {currentTab === "Creator_user_payments" && <CreatorUserPayments />}
+          {currentTab === "Subscription_billing" && <SubscriptionBilling />}
+          {currentTab === "Pending_payments" && <UserPendingPatments />}
         </div>
       </div>
     </>
