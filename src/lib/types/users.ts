@@ -1,19 +1,33 @@
 import { GlobalParamsUrl } from "./global";
 
-export type User = {
-  id: number;
-  name: string;
-  archived: boolean;
-  createdAt: string;
-  email: string;
-  phoneNumber: string;
-  lastSignInAt: string;
-  uuid: string;
-  countryCode: string;
-  smsCode: string;
-  smsCodeExpiresAt: string;
-  blocked: boolean;
-};
+export interface UserDetails {
+  profile: {
+    _id: string;
+    full_name: string;
+    email: string;
+    profile_pic: string;
+    phone_number: string;
+    service: string;
+    status: "A" | "I" | "B" | "D";
+  };
+  purchases: {
+    items: Array<{
+      _id: string;
+      creator: {
+        _id: string;
+        name: string;
+      };
+      product: {
+        _id: string;
+        product_title: string;
+      };
+      status: "captured" | "refunded" | "failed";
+      purchaseDate: string;
+      amount: number;
+    }>;
+    total: number;
+  };
+}
 
 export type IParamsUrl = GlobalParamsUrl & { hubUsers?: string };
 

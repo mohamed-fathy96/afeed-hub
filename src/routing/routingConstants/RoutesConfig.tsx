@@ -1,6 +1,4 @@
 import PublicRouteGuard from "../guards/PublicRouteGuard";
-// import PrivateRouteGuard from "../guards/PrivateRouteGuard";
-//urls
 //pages
 import LoginPage from "@app/pages/login";
 import DashboardPage from "@app/pages/dashboard";
@@ -15,9 +13,9 @@ import EditGroupPage from "@app/pages/permissions/groupPermissions/actions/EditG
 import UsersPage from "@app/pages/users";
 import EditUserPage from "@app/pages/users/edit";
 
-import HubUsersPage from "@app/pages/users/hubUsers";
 import CreatorsPage from "@app/pages/creators";
 import CreatorDetailsPage from "@app/pages/creators/creator-details";
+import PaymentsConsole from "@app/pages/payments";
 
 const publicRoutes = [
   {
@@ -64,14 +62,7 @@ const privateRoutes = [
     ),
     path: (id: string) => routes.dashboard.permissions.group.edit(id),
   },
-  {
-    element: (
-      <RestrictedRouteGuard requiredPermissions="users">
-        <HubUsersPage />
-      </RestrictedRouteGuard>
-    ),
-    path: routes.dashboard.hubUsers.index,
-  },
+
   {
     element: (
       <RestrictedRouteGuard requiredPermissions="users">
@@ -96,13 +87,21 @@ const privateRoutes = [
     ),
     path: routes.dashboard.creators.index,
   },
-   {
+  {
     element: (
       <RestrictedRouteGuard requiredPermissions="creators">
         <CreatorDetailsPage />
       </RestrictedRouteGuard>
     ),
     path: (id: string) => routes.dashboard.creators.edit(id),
+  },
+  {
+    element: (
+      <RestrictedRouteGuard requiredPermissions="creators">
+        <PaymentsConsole />
+      </RestrictedRouteGuard>
+    ),
+    path: routes.dashboard.payments.index,
   },
 ];
 

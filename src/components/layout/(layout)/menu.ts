@@ -2,6 +2,8 @@ import airplayIcon from "@iconify/icons-lucide/airplay";
 import userIcon from "@iconify/icons-lucide/user";
 import ShiledIcon from "@iconify/icons-lucide/shield-check";
 import StickyNote from "@iconify/icons-lucide/sticky-note";
+import Card from "@iconify/icons-lucide/credit-card";
+import Receipt from "@iconify/icons-lucide/receipt";
 import { routes } from "@app/lib/routes";
 import { IMenuItem } from "../admin";
 
@@ -22,6 +24,25 @@ export const adminMenuItems: IMenuItem[] = [
         label: "Creator Management",
         url: routes.dashboard.creators.index,
       },
+      {
+        key: "apps-Users",
+        icon: userIcon,
+        label: "User Management",
+        url: routes.dashboard.users.index,
+      },
+    ],
+  },
+  {
+    key: "apps-payments",
+    icon: Receipt,
+    label: "Payments",
+    children: [
+      {
+        key: "apps-payments-index",
+        label: "Payments Console",
+        url: routes.dashboard.payments.index,
+        icon: Card,
+      },
     ],
   },
 
@@ -30,18 +51,6 @@ export const adminMenuItems: IMenuItem[] = [
     icon: userIcon,
     label: "Manage",
     children: [
-      {
-        key: "apps-Users",
-        icon: userIcon,
-        label: "Users",
-        url: routes.dashboard.users.index,
-      },
-      {
-        key: "apps-HubUsers",
-        icon: userIcon,
-        label: "Hub Users",
-        url: routes.dashboard.hubUsers.index,
-      },
       {
         key: "apps-permissions",
         icon: ShiledIcon,

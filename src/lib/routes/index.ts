@@ -42,6 +42,11 @@ const routes = {
       index: "/creators",
       edit: (id: number | string) => `/creators/${id}`,
     },
+    payments: {
+      index: "/payments",
+      create: "/payments/create",
+      edit: (id: number | string) => `/payments/${id}`,
+    },
   },
 };
 
