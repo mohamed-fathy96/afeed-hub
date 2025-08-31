@@ -11,16 +11,15 @@ import { routes } from "@app/lib/routes";
 import { useToast } from "@app/helpers/hooks/use-toast";
 import Pagination from "@app/ui/Datagrid/Pagination";
 import { PageTitle } from "@app/ui/PageTitle";
-import { IParamsUrl, UserDetails } from "@app/lib/types/users";
+import { IParamsUrl, User } from "@app/lib/types/users";
 import { UserService } from "@app/services/actions";
 import { Badge, Button, Card, CardBody, Input } from "@app/ui";
-import { formatToLocalTime } from "@app/lib/utils/formatDate";
 import { Icon } from "@app/ui/Icon";
 
 interface UsersPageProps {}
 
 const UsersPage: React.FC<UsersPageProps> = () => {
-  const [dataList, setDataList] = useState<PaginationResponse<UserDetails>>();
+  const [dataList, setDataList] = useState<PaginationResponse<User>>();
   const [isLoaderOpen, setIsLoaderOpen] = useState<boolean>(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -38,7 +37,9 @@ const UsersPage: React.FC<UsersPageProps> = () => {
     setIsLoaderOpen(true);
     try {
       const res = await UserService.getUsers(params);
-      setDataList(res?.data);
+      console.log(res);
+
+      setDataList(res?.data?.data);
     } catch (err: any) {
       toast.error(err?.response?.data?.message ?? "Failed to get user list");
     } finally {
@@ -49,62 +50,68 @@ const UsersPage: React.FC<UsersPageProps> = () => {
     {
       title: "ID",
       field: "_id",
-      render: (rowData: UserDetails) => (
-        <span className="font-mono text-xs">{rowData.profile._id}</span>
+      render: (rowData: User) => (
+        <span className="font-mono text-xs">{rowData._id}</span>
       ),
     },
     {
       title: "Name",
       field: "full_name",
-      render: (rowData: UserDetails) => (
-        <div className="font-medium">{rowData.profile.full_name}</div>
+      render: (rowData: User) => (
+        <div className="font-medium">{rowData.name}</div>
       ),
     },
     {
       title: "Contact",
       field: "contact",
-      render: (rowData: UserDetails) => (
+      render: (rowData: User) => (
         <div className="space-y-1">
-          <div className="text-sm">{rowData.profile.email}</div>
-          {rowData.profile.phone_number && (
+          <div className="text-sm">{rowData.email}</div>
+          {rowData.phone_number && (
             <div className="text-xs text-base-content/70">
-              {rowData.profile.phone_number}
+              {rowData.phone_number}
             </div>
           )}
         </div>
       ),
     },
     {
-      title: "Service",
-      field: "service",
-      render: (rowData: UserDetails) => (
-        <div className="text-sm">{rowData.profile.service || "N/A"}</div>
+      title: "Total Purchases",
+      field: "totalPurchases",
+      render: (rowData: User) => (
+        <div className="text-sm font-medium">{rowData.totalPurchases}</div>
+      ),
+    },
+    {
+      title: "Total Spent",
+      field: "totalSpent",
+      render: (rowData: User) => (
+        <div className="text-sm font-medium">
+          ${rowData.totalSpent.toFixed(2)}
+        </div>
       ),
     },
     {
       title: "Status",
       field: "status",
-      render: (rowData: UserDetails) => (
-        <Badge color={rowData.profile.status === "A" ? "success" : "error"}>
-          {rowData.profile.status === "A" ? "Active" : "Inactive"}
+      render: (rowData: User) => (
+        <Badge color={rowData.status === "A" ? "success" : "error"}>
+          {rowData.status === "A"
+            ? "Active"
+            : rowData.status === "B"
+            ? "Blocked"
+            : rowData.status === "I"
+            ? "Inactive"
+            : "Deleted"}
         </Badge>
-      ),
-    },
-    {
-      title: "Purchases",
-      field: "purchases",
-      render: (rowData: UserDetails) => (
-        <div className="text-sm font-medium">
-          {rowData.purchases.total} purchases
-        </div>
       ),
     },
     {
       title: "Actions",
       field: "actions",
-      render: (rowData: UserDetails) => (
+      render: (rowData: User) => (
         <Button
-          onClick={() => navigate(routes.dashboard.users.edit(rowData.profile._id))}
+          onClick={() => navigate(routes.dashboard.users.edit(rowData._id))}
           color="primary"
           size="sm"
           className="btn-ghost"
@@ -160,49 +167,6 @@ const UsersPage: React.FC<UsersPageProps> = () => {
 
       <Card>
         <CardBody className="bg-base-100">
-          {/* User Statistics */}
-          {dataList?.items && dataList.items.length > 0 && (
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-              <div className="stat bg-primary/10 rounded-box">
-                <div className="stat-figure text-primary">
-                  <Icon icon="lucide:users" className="w-8 h-8" />
-                </div>
-                <div className="stat-title">Total Users</div>
-                <div className="stat-value text-primary">{dataList.total}</div>
-              </div>
-              
-              <div className="stat bg-success/10 rounded-box">
-                <div className="stat-figure text-success">
-                  <Icon icon="lucide:user-check" className="w-8 h-8" />
-                </div>
-                <div className="stat-title">Active Users</div>
-                <div className="stat-value text-success">
-                  {dataList.items.filter(user => user.profile.status === "A").length}
-                </div>
-              </div>
-
-              <div className="stat bg-warning/10 rounded-box">
-                <div className="stat-figure text-warning">
-                  <Icon icon="lucide:shopping-bag" className="w-8 h-8" />
-                </div>
-                <div className="stat-title">Total Purchases</div>
-                <div className="stat-value text-warning">
-                  {dataList.items.reduce((sum, user) => sum + user.purchases.total, 0)}
-                </div>
-              </div>
-
-              <div className="stat bg-info/10 rounded-box">
-                <div className="stat-figure text-info">
-                  <Icon icon="lucide:activity" className="w-8 h-8" />
-                </div>
-                <div className="stat-title">Active Buyers</div>
-                <div className="stat-value text-info">
-                  {dataList.items.filter(user => user.purchases.total > 0).length}
-                </div>
-              </div>
-            </div>
-          )}
-
           {/* Search Section */}
           <div className="flex flex-col sm:flex-row gap-4 mb-6">
             <div className="flex-1">
@@ -272,11 +236,7 @@ const UsersPage: React.FC<UsersPageProps> = () => {
             <SectionLoader />
           ) : dataList?.items && dataList.items.length > 0 ? (
             <>
-              <DataGridTable
-                data={dataList?.items || []}
-                columns={columns}
-                options={{ actionsColumnIndex: -1 }}
-              />
+              <DataGridTable data={dataList?.items || []} columns={columns} />
               <Pagination
                 pageCount={Math.ceil(
                   (dataList?.total || 0) / (params.limit || 10)

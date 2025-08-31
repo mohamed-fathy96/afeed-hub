@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { Button, Card, CardBody, Input } from "@app/ui";
+import { Button, Card, CardBody, Input, SectionHeader } from "@app/ui";
 import { Icon } from "@app/ui/Icon";
 import { formatToLocalTime } from "@app/lib/utils/formatDate";
 import { Badge } from "@app/ui/Badge";
@@ -148,12 +148,12 @@ const UserPurchases: React.FC<UserPurchasesProps> = ({ purchases }) => {
       <Card>
         <CardBody>
           <div className="flex justify-between items-center mb-4">
-            <div>
-              <h3 className="text-lg font-semibold">Purchase History</h3>
-              <p className="text-sm text-base-content/70">
-                All purchases made by this user
-              </p>
-            </div>
+            <SectionHeader
+              title="Purchase History"
+              description="All purchases made by this user"
+              type="primary"
+              icon="lucide:shopping-bag"
+            />
           </div>
 
           {purchases?.items?.length === 0 ? (

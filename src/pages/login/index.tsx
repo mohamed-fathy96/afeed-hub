@@ -2,10 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import Logo from "@app/assets/images/logo.png";
-
-//assets
-// import logo from '@app/assets/images/header-logo.png';
-//actions
 import { setLoginUser } from "@app/store/auth/AuthSlice";
 //selectors
 import { getIsLoginLoading } from "@app/store/auth/AuthSelectors";
@@ -239,13 +235,7 @@ const LoginPage: React.FC = () => {
             className="w-full flex justify-center py-4 px-6 border border-transparent rounded-xl shadow-lg text-base font-semibold  focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-75 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]"
           >
             {isLoading ? (
-              <span className="flex items-center">
-                <Icon
-                  icon="lucide:loader-2"
-                  className="animate-spin w-5 h-5 mr-3"
-                />
-                Signing in...
-              </span>
+              <span className="flex items-center">Signing in...</span>
             ) : (
               <span className="flex items-center">
                 <Icon icon="lucide:log-in" className="w-5 h-5 mr-3" />

@@ -383,19 +383,18 @@ const EditUserPage: React.FC<PageProps> = () => {
           </div>
 
           <div className="lg:col-span-9">
-            <Tabs variant="bordered" className="px-4">
+            <Tabs variant="tabs-box" className="px-4">
               <RadioTab
                 name="my_tabs_1"
                 label="Purchases"
                 contentClassName="pt-4"
                 checked={currentTab === "Purchases"}
                 onChange={() => handleTabChange("Purchases")}
-              >
-                {currentTab === "Purchases" && userData?.purchases && (
-                  <UserPurchases purchases={userData.purchases} />
-                )}
-              </RadioTab>
+              ></RadioTab>
             </Tabs>
+            {currentTab === "Purchases" && userData?.purchases && (
+              <UserPurchases purchases={userData.purchases} />
+            )}
           </div>
         </div>
       )}

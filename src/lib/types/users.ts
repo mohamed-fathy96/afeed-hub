@@ -48,3 +48,14 @@ export type ITransactionsParamsUrl = GlobalParamsUrl & {
   startDate: string;
   endDate: string;
 };
+export interface User {
+  created_at: string;
+  email: string;
+  name: string;
+  phone_number: string;
+  profile_pic: string;
+  status: "A" | "I" | "B" | "D";
+  totalPurchases: number;
+  totalSpent: number;
+  _id: string;
+}

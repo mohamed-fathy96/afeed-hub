@@ -1,4 +1,3 @@
-
 //api end points
 export const endPoints = {
   global: {
@@ -60,6 +59,7 @@ export const endPoints = {
     getById: "api/hub/creators/{0}/overview",
     getCreatorProduct: "api/hub/creators/{0}/products",
     getCreatorCustomers: "api/hub/creators/{0}/customers",
+    impersonateCreator: "api/hub/creators/{0}/impersonate",
   },
   payments: {
     getCreatorUserPayments: "api/hub/payments/user-creator",

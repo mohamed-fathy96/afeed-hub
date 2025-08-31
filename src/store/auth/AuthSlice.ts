@@ -76,6 +76,7 @@ const authSlice = createSlice({
           action.payload.refreshToken
         );
         state.isLoading = false;
+        window.location.href = routes.dashboard.creators.index;
       })
       .addCase(setLoginUser.rejected, (state) => {
         state.isLoading = false;

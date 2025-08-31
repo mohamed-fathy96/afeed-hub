@@ -4,6 +4,8 @@ import ShiledIcon from "@iconify/icons-lucide/shield-check";
 import StickyNote from "@iconify/icons-lucide/sticky-note";
 import Card from "@iconify/icons-lucide/credit-card";
 import Receipt from "@iconify/icons-lucide/receipt";
+import Users from "@iconify/icons-lucide/users";
+import UserCheck from "@iconify/icons-lucide/user-check";
 import { routes } from "@app/lib/routes";
 import { IMenuItem } from "../admin";
 
@@ -21,12 +23,13 @@ export const adminMenuItems: IMenuItem[] = [
     children: [
       {
         key: "apps-creator-index",
+        icon: Users,
         label: "Creator Management",
         url: routes.dashboard.creators.index,
       },
       {
         key: "apps-Users",
-        icon: userIcon,
+        icon: UserCheck,
         label: "User Management",
         url: routes.dashboard.users.index,
       },

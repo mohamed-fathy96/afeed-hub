@@ -31,4 +31,10 @@ export class CreatorService {
       params,
     });
   }
+  static impersonateCreator(...extraParams: any[]) {
+    return apiGatewayService({
+      method: "POST",
+      url: setEndPoint(endPoints.creators.impersonateCreator, ...extraParams),
+    });
+  }
 }

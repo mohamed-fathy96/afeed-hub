@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, CardBody } from "@app/ui";
+import { Card, CardBody, SectionHeader } from "@app/ui";
 import { Icon } from "@app/ui/Icon";
 import { formatToLocalTime } from "@app/lib/utils/formatDate";
 import { CreatorDetails } from "@app/lib/types/creators";
@@ -121,10 +121,12 @@ const CreatorOverview: React.FC<CreatorOverviewProps> = ({ creator }) => {
       <Card className="bg-white border border-gray-200">
         <CardBody className="p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibol">Payments History</h3>
-            <button className="text-sm text-blue-600 hover:text-blue-800 font-medium">
-              View Full History
-            </button>
+            <SectionHeader
+              title="Payments History"
+              description="View all past payments made to the creator."
+              type="primary"
+              icon="lucide:credit-card"
+            />
           </div>
 
           <div className="overflow-x-auto">
@@ -176,7 +178,12 @@ const CreatorOverview: React.FC<CreatorOverviewProps> = ({ creator }) => {
       {/* Creator Information */}
       <Card className="bg-base-100">
         <CardBody className="p-6">
-          <h3 className="text-lg font-semibold  mb-4">Creator Information</h3>
+          <SectionHeader
+            title="Creator Information"
+            description="View and manage creator details."
+            type="primary"
+            icon="lucide:user"
+          />
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
@@ -199,9 +206,7 @@ const CreatorOverview: React.FC<CreatorOverviewProps> = ({ creator }) => {
                   </p>
                 </div> */}
                 <div>
-                  <label className="text-sm font-medium">
-                    Member Since
-                  </label>
+                  <label className="text-sm font-medium">Member Since</label>
                   <p className="text-sm mt-1">
                     {formatToLocalTime(creator.subscription.dueDate)}
                   </p>
