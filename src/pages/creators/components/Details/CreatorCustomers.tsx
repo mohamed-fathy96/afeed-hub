@@ -110,8 +110,8 @@ const CreatorCustomers: React.FC<CreatorCustomersProps> = ({ creatorId }) => {
 
   const columns = [
     {
-      header: "Customer",
-      accessor: "customer",
+      title: "Customer",
+      field: "customer",
       render: (purchase: CustomerPurchase) => (
         <div className="flex flex-col">
           <span className="font-medium text-sm">{purchase.customer.name}</span>
@@ -122,8 +122,8 @@ const CreatorCustomers: React.FC<CreatorCustomersProps> = ({ creatorId }) => {
       ),
     },
     {
-      header: "Product",
-      accessor: "product",
+      title: "Product",
+      field: "product",
       render: (purchase: CustomerPurchase) => (
         <div className="max-w-[200px]">
           <span
@@ -136,8 +136,8 @@ const CreatorCustomers: React.FC<CreatorCustomersProps> = ({ creatorId }) => {
       ),
     },
     {
-      header: "Purchase Date",
-      accessor: "purchaseDate",
+      title: "Purchase Date",
+      field: "purchaseDate",
       render: (purchase: CustomerPurchase) => (
         <span className="text-sm">
           {formatToLocalTime(purchase.purchaseDate)}
@@ -145,8 +145,8 @@ const CreatorCustomers: React.FC<CreatorCustomersProps> = ({ creatorId }) => {
       ),
     },
     {
-      header: "Access Status",
-      accessor: "accessStatus",
+      title: "Access Status",
+      field: "accessStatus",
       render: (purchase: CustomerPurchase) => (
         <div className="flex items-center gap-2">
           <div
@@ -165,8 +165,8 @@ const CreatorCustomers: React.FC<CreatorCustomersProps> = ({ creatorId }) => {
       ),
     },
     {
-      header: "Expiry Date",
-      accessor: "expiryDate",
+      title: "Expiry Date",
+      field: "expiryDate",
       render: (purchase: CustomerPurchase) => (
         <span className="text-sm">
           {purchase.expiryDate

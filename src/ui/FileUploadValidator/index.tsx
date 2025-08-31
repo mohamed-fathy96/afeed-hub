@@ -69,7 +69,7 @@ const FileUploadValidator: React.FC<FileUploadValidatorProps> = ({
     requiredHeaders.forEach((header) => {
       if (!headers.includes(header)) {
         headerErrors.push(
-          `Missing required header: "${header}". The file must include this column.`
+          `Missing required title: "${header}". The file must include this column.`
         );
       }
     });

@@ -79,8 +79,13 @@ const CreatorDetailsPage: React.FC<PageProps> = () => {
       console.log(response);
 
       toast.success("Impersonated user successfully");
+      const env =
+        process.env.NODE_ENV === "development"
+          ? "https://staging.afeed.co"
+          : "https://afeed.co";
+
       window.open(
-        `http://localhost:3102/en/cc/auth/login?token=${response?.data?.data?.token}`,
+        `${env}/en/cc/auth/login?token=${response?.data?.data?.token}`,
         "_blank"
       );
     },

@@ -32,4 +32,18 @@ export class PaymentService {
       params,
     });
   }
+  static getSettlementLog(params: any, ...extraParams: any[]) {
+    return apiGatewayService({
+      method: "GET",
+      url: setEndPoint(endPoints.payments.settlementLog, ...extraParams),
+      params,
+    });
+  }
+  static updatePayouts(data: any, ...extraParams: any[]) {
+    return apiGatewayService({
+      method: "POST",
+      url: setEndPoint(endPoints.payments.updatePayouts, ...extraParams),
+      data,
+    });
+  }
 }
